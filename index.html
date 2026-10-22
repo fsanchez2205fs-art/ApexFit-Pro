@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Entrenamiento - 4 Fases</title>
+<!-- Enlace al Manifest de la PWA -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Icono de acceso directo para Apple / iOS -->
+<link rel="apple-touch-icon" href="logo-icono.png">
+  <style>
+    :root {
+      --bg-primary: #121824;
+      --bg-card: #1e2638;
+      --accent: #ff4b4b;
+      --accent-hover: #e03e3e;
+      --text-main: #f0f4f8;
+      --text-muted: #94a3b8;
+      --border-color: #2e3a52;
+      --success: #10b981;
+      --video-btn: #ef4444;
+      --info-bg: rgba(56, 189, 248, 0.1);
+      --highlight: #38bdf8;
+      --week-active: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-primary); color: var(--text-main); padding-bottom: 30px; }
+
+    header {
+      background-color: var(--bg-card);
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 2px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+    /* Banner de Bienvenida */
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(255, 75, 75, 0.15), rgba(56, 189, 248, 0.15));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .welcome-banner h2 { font-size: 1rem; color: var(--highlight); margin-bottom: 4px; }
+    .welcome-banner p { font-size: 0.82rem; color: var(--text-main); }
+    .welcome-date { color: var(--week-active); font-weight: bold; text-transform: capitalize; }
+
+    .top-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .selector-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background-color: var(--bg-primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      font-size: 0.78rem;
+    }
+
+    .selector-box select, .selector-box input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--accent);
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .selector-box select { color: var(--highlight); cursor: pointer; }
+
+    .day-selector {
+      display: flex;
+      justify-content: space-between;
+      background-color: var(--bg-card);
+      padding: 8px 4px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .day-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      flex: 1;
+      margin: 0 2px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .day-btn.active { background-color: var(--accent); color: white; border-color: var(--accent); }
+
+    .container { padding: 0 10px; max-width: 600px; margin: 0 auto; }
+
+    .exercise-card, .profile-card, .metrics-card, .rest-card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+    }
+
+    .rest-card {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .rest-card h2 { color: var(--highlight); margin-bottom: 10px; font-size: 1.1rem; }
+    .rest-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+
+    .exercise-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 10px; }
+    .exercise-title { font-size: 1rem; font-weight: bold; color: white; }
+
+    .video-link {
+      background-color: var(--video-btn);
+      color: white;
+      text-decoration: none;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .exercise-info { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+
+    .calc-weight-tag {
+      font-size: 0.78rem;
+      color: var(--highlight);
+      background-color: var(--info-bg);
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .calc-weight-tag input {
+      width: 45px;
+      padding: 2px;
+      background: var(--bg-primary);
+      border: 1px solid var(--highlight);
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .set-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      background-color: rgba(255, 255, 255, 0.03);
+      padding: 8px 10px;
+      border-radius: 6px;
+      gap: 6px;
+    }
+
+    .set-main-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .set-label { font-size: 0.82rem; font-weight: bold; width: 60px; }
+
+    .input-group { display: flex; align-items: center; gap: 5px; }
+    .input-group label { font-size: 0.72rem; color: var(--text-muted); }
+
+    input[type="number"], input[type="text"], input[type="date"] {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: white;
+      padding: 5px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    input[type="number"] { width: 60px; }
+    input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--success); cursor: pointer; }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.85rem;
+    }
+
+    .form-row input { text-align: left; padding: 6px 10px; width: 60%; }
+
+    .set-video-upload {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-top: 5px;
+      margin-top: 2px;
+    }
+
+    .set-video-upload input[type="file"] { font-size: 0.7rem; color: var(--highlight); width: 140px; }
+
+    .set-video-preview {
+      width: 100%;
+      max-height: 140px;
+      border-radius: 6px;
+      margin-top: 4px;
+      background: black;
+      display: none;
+    }
+
+    .actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.88rem; }
+    .btn-save { background-color: var(--success); color: white; }
+    .btn-reset { background-color: transparent; border: 1px solid var(--accent); color: var(--accent); }
+
+    .history-log { margin-top: 25px; background-color: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+    .history-log h3 { font-size: 0.9rem; margin-bottom: 10px; color: var(--accent); }
+    .history-item { font-size: 0.78rem; border-bottom: 1px solid var(--border-color); padding: 5px 0; color: var(--text-muted); }
+
+    .progress-video-card { background: var(--bg-primary); padding: 10px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border-color); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Control de Entrenamiento - 4 Fases</h1>
+
+    <div class="top-controls">
+      <div class="selector-box">
+        <span>Fase:</span>
+        <select id="current-meso-select" onchange="switchMesocycle(this.value)">
+          <option value="1">Fase 1 (Base)</option>
+          <option value="2">Fase 2 (Volumen)</option>
+          <option value="3" selected>Fase 3 (Definición)</option>
+          <option value="4">Fase 4 (Mantenimiento)</option>
+        </select>
+      </div>
+
+      <div class="selector-box">
+        <span>Semana:</span>
+        <select id="current-week-select" onchange="switchWeek(this.value)">
+          <option value="1">Semana 1</option>
+          <option value="2">Semana 2</option>
+          <option value="3">Semana 3</option>
+          <option value="4">Semana 4</option>
+          <option value="5">Semana 5</option>
+          <option value="6">Semana 6 (Descarga)</option>
+        </select>
+      </div>
+
+      <div class="selector-box">
+        <span>Objetivo:</span>
+        <select id="user-goal-select" onchange="updateUserGoal(this.value)">
+          <option value="definicion">Definición / Pérdida Grasa</option>
+          <option value="mantenimiento">Mantenimiento</option>
+          <option value="fuerza">Fuerza / Volumen</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="day-selector">
+    <button class="day-btn" id="btn-LUNES" onclick="switchDay('LUNES')">LUNES</button>
+    <button class="day-btn" id="btn-MARTES" onclick="switchDay('MARTES')">MARTES</button>
+    <button class="day-btn" id="btn-MIERCOLES" onclick="switchDay('MIERCOLES')">MIÉRCOLES 💤</button>
+    <button class="day-btn" id="btn-JUEVES" onclick="switchDay('JUEVES')">JUEVES</button>
+    <button class="day-btn" id="btn-VIERNES" onclick="switchDay('VIERNES')">VIERNES</button>
+    <button class="day-btn" id="btn-PERFIL" onclick="switchDay('PERFIL')">PERFIL 👤</button>
+    <button class="day-btn" id="btn-VIDEOS" onclick="switchDay('VIDEOS')">VÍDEOS 🎬</button>
+  </div>
+
+  <div class="container">
+
+    <!-- BANNER DE BIENVENIDA CON FECHA -->
+    <div class="welcome-banner" id="welcome-banner">
+      <h2 id="welcome-message">¡Hola! Tu reto para hoy:</h2>
+      <p>Fecha: <span class="welcome-date" id="current-date-str"></span></p>
+    </div>
+    
+    <!-- VISTA DE ENTRENAMIENTO -->
+    <div id="workout-view">
+      <form id="workout-form">
+        <div id="exercise-list"></div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-save" onclick="saveWorkout()">Guardar Sesión</button>
+          <button type="button" class="btn btn-reset" onclick="resetCurrentDay()">Limpiar Día</button>
+        </div>
+      </form>
+
+      <div class="history-log">
+        <h3>Historial de la última sesión</h3>
+        <div id="history-content">No hay registros guardados aún.</div>
+      </div>
+    </div>
+
+    <!-- VISTA DE MIÉRCOLES (DESCANSO) -->
+    <div id="rest-view" style="display: none;">
+      <div class="rest-card">
+        <h2>💤 Día de Descanso Activo</h2>
+        <p>Hoy no hay entrenamiento programado en esta fase.</p>
+        <p style="margin-top: 10px;">Aprovecha para reponer energía, estirar suavemente o realizar una caminata ligera para favorecer la eliminación de fatiga muscular y la quema de grasa.</p>
+      </div>
+    </div>
+
+    <!-- VISTA DE PERFIL DE USUARIO -->
+    <div id="profile-view" style="display: none;">
+      <div class="profile-card">
+        <h2 style="font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px;">👤 Datos Personales del Atleta</h2>
+        
+        <div class="form-row">
+          <label for="prof-name">Nombre:</label>
+          <input type="text" id="prof-name" placeholder="Tu nombre">
+        </div>
+        
+        <div class="form-row">
+          <label for="prof-dob">Fecha de Nacimiento:</label>
+          <input type="date" id="prof-dob">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-height">Altura (cm):</label>
+          <input type="number" id="prof-height" placeholder="Ej: 175" style="width: 100px;">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-weight">Peso Inicial (kg):</label>
+          <input type="number" id="prof-weight" step="0.5" placeholder="Ej: 75" style="width: 100px;">
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-save" onclick="saveProfile()">Guardar Perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA DE VÍDEOS DE TÉCNICA -->
+    <div id="videos-view" style="display: none;">
+      <div class="metrics-card">
+        <h2 style="font-size: 1.05rem; color: var(--video-btn); margin-bottom: 10px;">🎬 Vídeos de Técnica Grabados (Para Corrección)</h2>
+        <div id="progress-videos-container">No hay vídeos de ejercicios subidos aún.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const weekPctMultipliers = { 1: 1.0, 2: 1.03, 3: 1.06, 4: 1.10, 5: 1.13, 6: 0.90 };
+    const goalMultipliers = { definicion: 0.98, mantenimiento: 1.0, fuerza: 1.04 };
+
+    const allMesocyclesData = {
+      1: {
+        LUNES: [
+          { name: "Flexiones de Pecho", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Peso corporal", video: "https://www.youtube.com/results?search_query=flexiones+pecho+tecnica" },
+          { name: "Remo Pendlay / Remo con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 55, note: "Espalda paralela", video: "https://www.youtube.com/results?search_query=remo+pendlay" },
+          { name: "Press Militar con Mancuernas", target: "3 series | 10-12 reps", sets: 3, pct: 35, note: "Mancuernas", video: "https://www.youtube.com/results?search_query=press+militar+mancuernas" },
+          { name: "Curl de Bíceps con Mancuerna", target: "3 series | 10-12 reps", sets: 3, pct: 20, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+biceps+mancuerna" },
+          { name: "Tríceps OH con Mancuerna", target: "3 series | 10-12 reps", sets: 3, pct: 25, note: "Tríceps", video: "https://www.youtube.com/results?search_query=triceps+overhead+mancuerna" },
+          { name: "Plancha Abdominal con Disco", target: "3 series | 30-45 seg", sets: 3, pct: 10, note: "Core", video: "https://www.youtube.com/results?search_query=plancha+abdominal+con+disco" }
+        ],
+        MARTES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 50, note: "Barra guiada/libre", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+con+barra" },
+          { name: "Peso Muerto Rumano con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Cadena posterior", video: "https://www.youtube.com/results?search_query=peso+muerto+rumano+barra" },
+          { name: "Zancada Frontal Goblet", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 30, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+frontal+goblet" },
+          { name: "Curl de Isquios a Una Pierna", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 35, note: "Isquios", video: "https://www.youtube.com/results?search_query=single+leg+curl+slide" },
+          { name: "Puente de Glúteo Unilateral", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 25, note: "Glúteos", video: "https://www.youtube.com/results?search_query=puente+gluteo+unilateral" }
+        ],
+        JUEVES: [
+          { name: "Remo Unilateral con Mancuerna", target: "3 series | 10-12 reps/lado", sets: 3, pct: 30, note: "Espalda", video: "https://www.youtube.com/results?search_query=remo+unilateral+mancuerna" },
+          { name: "Press Banca Plano con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 55, note: "Pecho", video: "https://www.youtube.com/results?search_query=press+banca+plano+barra" },
+          { name: "Pájaro con Mancuernas", target: "3 series | 10-12 reps", sets: 3, pct: 15, note: "Hombros", video: "https://www.youtube.com/results?search_query=pajaro+con+mancuernas" },
+          { name: "Curl Scott", target: "3 series | 10-12 reps", sets: 3, pct: 20, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+scott" },
+          { name: "Press Pallof", target: "3 series | 10-12 reps/lado", sets: 3, pct: 15, note: "Core", video: "https://www.youtube.com/results?search_query=press+pallof" }
+        ],
+        VIERNES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 45, note: "Piernas", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+barra" },
+          { name: "Peso Muerto Piernas Rígidas", target: "3 series | 10-12 reps", sets: 3, pct: 55, note: "Isquios", video: "https://www.youtube.com/results?search_query=peso+muerto+piernas+rigidas" },
+          { name: "Zancada Frontal", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 35, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+frontal" },
+          { name: "Curl de Isquios Deslizando", target: "3 series | 10-12 reps", sets: 3, pct: 40, note: "Isquios", video: "https://www.youtube.com/results?search_query=leg+curl+slides" },
+          { name: "Crunches Abdominales", target: "3 series | 12-15 reps", sets: 3, pct: 10, note: "Abdomen", video: "https://www.youtube.com/results?search_query=crunches+abdominales" }
+        ]
+      },
+      2: {
+        LUNES: [
+          { name: "Press Militar con Mancuernas", target: "3 series | 10-12 reps", sets: 3, pct: 40, note: "Hombros", video: "https://www.youtube.com/results?search_query=press+militar+mancuernas" },
+          { name: "Remo en TRX", target: "3 series | 10-12 reps", sets: 3, pct: 65, note: "Espalda", video: "https://www.youtube.com/results?search_query=remo+en+trx" },
+          { name: "Tríceps OH Mancuerna", target: "3 series | 10-12 reps", sets: 3, pct: 25, note: "Tríceps", video: "https://www.youtube.com/results?search_query=triceps+oh+mancuerna" },
+          { name: "Bíceps Agarre Supino TRX", target: "3 series | 10-12 reps", sets: 3, pct: 30, note: "Bíceps", video: "https://www.youtube.com/results?search_query=biceps+supino+trx" },
+          { name: "Vuelo Bilateral de Pie", target: "3 series | 10-12 reps", sets: 3, pct: 16, note: "Hombros", video: "https://www.youtube.com/results?search_query=vuelo+bilateral+mancuernas" },
+          { name: "Flexiones de Pecho", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Pecho", video: "https://www.youtube.com/results?search_query=flexiones+de+pecho" }
+        ],
+        MARTES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 50, note: "Piernas", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+barra" },
+          { name: "Zancada con Mancuernas", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 35, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+frontal+mancuernas" },
+          { name: "Peso Muerto Piernas Rígidas", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Isquios", video: "https://www.youtube.com/results?search_query=peso+muerto+piernas+rigidas" },
+          { name: "Curl Isquios Unilateral", target: "3 series | 10-12 reps", sets: 3, pct: 35, note: "Isquios", video: "https://www.youtube.com/results?search_query=single+leg+curl+slides" },
+          { name: "Puente de Glúteo Unilateral", target: "3 series | 10-12 reps", sets: 3, pct: 25, note: "Glúteos", video: "https://www.youtube.com/results?search_query=puente+gluteo+unilateral" },
+          { name: "Curl Isquios Bilateral", target: "3 series | 10-12 reps", sets: 3, pct: 40, note: "Isquios", video: "https://www.youtube.com/results?search_query=leg+curl+slides" }
+        ],
+        JUEVES: [
+          { name: "Flexión con TRX", target: "3 series | 10-12 reps", sets: 3, pct: 55, note: "Pecho", video: "https://www.youtube.com/results?search_query=flexion+con+trx" },
+          { name: "Remo Pendlay con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Espalda", video: "https://www.youtube.com/results?search_query=remo+pendlay" },
+          { name: "Fondo Tríceps", target: "3 series | 10-12 reps", sets: 3, pct: 55, note: "Tríceps", video: "https://www.youtube.com/results?search_query=fondo+triceps" },
+          { name: "Curl Scott", target: "3 series | 10-12 reps", sets: 3, pct: 22, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+scott" },
+          { name: "Pájaro con Mancuernas", target: "3 series | 10-12 reps", sets: 3, pct: 16, note: "Hombros", video: "https://www.youtube.com/results?search_query=pajaro+con+mancuernas" },
+          { name: "Press Pallof", target: "3 series | 10-12 reps", sets: 3, pct: 15, note: "Core", video: "https://www.youtube.com/results?search_query=press+pallof" }
+        ],
+        VIERNES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 50, note: "Piernas", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+barra" },
+          { name: "Zancada Goblet", target: "3 series | 10-12 reps", sets: 3, pct: 35, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+goblet" },
+          { name: "Peso Muerto Rumano con Barra", target: "3 series | 10-12 reps", sets: 3, pct: 65, note: "Isquios", video: "https://www.youtube.com/results?search_query=peso+muerto+rumano+barra" },
+          { name: "Monster Walking", target: "3 series | 12-15 pasos/lado", sets: 3, pct: 15, note: "Glúteo medio", video: "https://www.youtube.com/results?search_query=monster+walking" },
+          { name: "Plancha Abdominal", target: "3 series | 30-45 seg", sets: 3, pct: 10, note: "Core", video: "https://www.youtube.com/results?search_query=plancha+abdominal" },
+          { name: "Crunches Abdominales", target: "3 series | 12-15 reps", sets: 3, pct: 10, note: "Abdomen", video: "https://www.youtube.com/results?search_query=crunches" }
+        ]
+      },
+      3: {
+        LUNES: [
+          { name: "Press Banca Plano con Barra", target: "3 series | 8-10 reps", sets: 3, pct: 60, note: "Preservación Pecho", video: "https://www.youtube.com/results?search_query=press+banca+plano+barra" },
+          { name: "Remo Pendlay / Remo con Barra", target: "3 series | 8-10 reps", sets: 3, pct: 60, note: "Densidad Espalda", video: "https://www.youtube.com/results?search_query=remo+pendlay+barra" },
+          { name: "Press Militar de Pie con Barra/Mancuerna", target: "3 series | 8-10 reps", sets: 3, pct: 40, note: "Hombros", video: "https://www.youtube.com/results?search_query=press+militar+barra" },
+          { name: "Curl de Bíceps con Goma/Barra", target: "3 series | 10-12 reps", sets: 3, pct: 20, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+biceps+barra" },
+          { name: "Extensiones de Tríceps TRX", target: "3 series | 10-12 reps", sets: 3, pct: 50, note: "Tríceps", video: "https://www.youtube.com/results?search_query=extensiones+triceps+trx" },
+          { name: "Plancha Abdominal", target: "3 series | 30-45 seg", sets: 3, pct: 10, note: "Core", video: "https://www.youtube.com/results?search_query=plancha+abdominal+tecnica" }
+        ],
+        MARTES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 8-10 reps", sets: 3, pct: 55, note: "Gasto calórico/Cuádriceps", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+barra" },
+          { name: "Peso Muerto Rumano con Barra", target: "3 series | 8-10 reps", sets: 3, pct: 65, note: "Cadena Posterior", video: "https://www.youtube.com/results?search_query=peso+muerto+rumano+barra" },
+          { name: "Zancada Búlgara", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 35, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+bulgara+banco" },
+          { name: "Curl Femoral TRX", target: "3 series | 10-12 reps", sets: 3, pct: 40, note: "Isquios", video: "https://www.youtube.com/results?search_query=curl+femoral+trx" },
+          { name: "Elevación de Gemelos", target: "3 series | 12-15 reps", sets: 3, pct: 15, note: "Gemelos", video: "https://www.youtube.com/results?search_query=elevacion+gemelos+unilateral" },
+          { name: "Press Pallof", target: "3 series | 10-12 reps", sets: 3, pct: 15, note: "Core", video: "https://www.youtube.com/results?search_query=press+pallof+con+goma" }
+        ],
+        JUEVES: [
+          { name: "Press Inclinado con Mancuernas/Barra", target: "3 series | 10-12 reps", sets: 3, pct: 50, note: "Pecho Superior", video: "https://www.youtube.com/results?search_query=press+inclinado+mancuernas" },
+          { name: "Remo Unilateral con Mancuerna", target: "3 series | 10-12 reps", sets: 3, pct: 30, note: "Espalda", video: "https://www.youtube.com/results?search_query=remo+unilateral+mancuerna" },
+          { name: "Elevaciones Laterales", target: "3 series | 12-15 reps", sets: 3, pct: 18, note: "Hombros", video: "https://www.youtube.com/results?search_query=elevaciones+laterales+mancuernas" },
+          { name: "Pájaro Posterior", target: "3 series | 12-15 reps", sets: 3, pct: 18, note: "Hombro posterior", video: "https://www.youtube.com/results?search_query=pajaro+deltoides+posterior" },
+          { name: "Fondos de Tríceps", target: "3 series | 10-12 reps", sets: 3, pct: 60, note: "Tríceps", video: "https://www.youtube.com/results?search_query=fondos+triceps+trx" },
+          { name: "Curl Inclinado", target: "3 series | 10-12 reps", sets: 3, pct: 24, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+inclinado+biceps" }
+        ],
+        VIERNES: [
+          { name: "Hip Thrust con Barra en Banco", target: "3 series | 8-10 reps", sets: 3, pct: 70, note: "Glúteos/Cadena Posterior", video: "https://www.youtube.com/results?search_query=hip+thrust+con+barra" },
+          { name: "Peso Muerto Piernas Rígidas con Barra", target: "3 series | 8-10 reps", sets: 3, pct: 60, note: "Isquios", video: "https://www.youtube.com/results?search_query=peso+muerto+piernas+rigidas+barra" },
+          { name: "Zancadas Caminando", target: "3 series | 10-12 reps/pierna", sets: 3, pct: 30, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancadas+caminando+mancuernas" },
+          { name: "Monster Walking", target: "3 series | 12-15 pasos/lado", sets: 3, pct: 15, note: "Glúteos", video: "https://www.youtube.com/results?search_query=monster+walk+banda" },
+          { name: "Crunches / Plancha", target: "3 series | 12-15 reps", sets: 3, pct: 15, note: "Core", video: "https://www.youtube.com/results?search_query=crunch+abdominal" }
+        ]
+      },
+      4: {
+        LUNES: [
+          { name: "Press Banca Plano con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 68, note: "Fuerza/Mantenimiento Pecho", video: "https://www.youtube.com/results?search_query=press+banca+plano+barra" },
+          { name: "Remo Pendlay con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 65, note: "Fuerza Espalda", video: "https://www.youtube.com/results?search_query=remo+pendlay+barra" },
+          { name: "Press Militar Sentado/Pie con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 45, note: "Fuerza Hombros", video: "https://www.youtube.com/results?search_query=press+militar+barra" },
+          { name: "Curl de Bíceps con Barra", target: "3 series | 8 reps", sets: 3, pct: 25, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+biceps+barra" },
+          { name: "Fondos de Tríceps / TRX", target: "3 series | 8 reps", sets: 3, pct: 65, note: "Tríceps", video: "https://www.youtube.com/results?search_query=fondos+triceps" },
+          { name: "Plancha Abdominal Lastrada", target: "3 series | 45-60 seg", sets: 3, pct: 15, note: "Core", video: "https://www.youtube.com/results?search_query=plancha+abdominal+lastrada" }
+        ],
+        MARTES: [
+          { name: "Sentadilla Trasera con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 60, note: "Tensión Mecánica Piernas", video: "https://www.youtube.com/results?search_query=sentadilla+trasera+barra" },
+          { name: "Peso Muerto Rumano con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 70, note: "Isquios/Fuerza", video: "https://www.youtube.com/results?search_query=peso+muerto+rumano+barra" },
+          { name: "Zancada Búlgara", target: "3 series | 8 reps/pierna", sets: 3, pct: 40, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancada+bulgara+banco" },
+          { name: "Curl Femoral TRX", target: "3 series | 8-10 reps", sets: 3, pct: 45, note: "Isquios", video: "https://www.youtube.com/results?search_query=curl+femoral+trx" },
+          { name: "Gemelos Unilateral con Carga", target: "3 series | 10 reps/pierna", sets: 3, pct: 25, note: "Gemelos", video: "https://www.youtube.com/results?search_query=elevacion+gemelos+unilateral" },
+          { name: "Press Pallof Fuerte", target: "3 series | 10 reps/lado", sets: 3, pct: 20, note: "Core", video: "https://www.youtube.com/results?search_query=press+pallof+fuerte" }
+        ],
+        JUEVES: [
+          { name: "Press Inclinado con Barra/Mancuernas", target: "3 series | 6-8 reps", sets: 3, pct: 58, note: "Pecho Superior", video: "https://www.youtube.com/results?search_query=press+inclinado+barra" },
+          { name: "Remo Unilateral Pesado", target: "3 series | 6-8 reps", sets: 3, pct: 38, note: "Espalda", video: "https://www.youtube.com/results?search_query=remo+unilateral+mancuerna" },
+          { name: "Elevaciones Laterales (Pausa)", target: "3 series | 10 reps", sets: 3, pct: 20, note: "Hombros", video: "https://www.youtube.com/results?search_query=elevaciones+laterales+tecnica" },
+          { name: "Pájaro Posterior Pesado", target: "3 series | 10 reps", sets: 3, pct: 20, note: "Hombros", video: "https://www.youtube.com/results?search_query=pajaro+deltoides+posterior" },
+          { name: "Extensiones Tríceps TRX", target: "3 series | 8 reps", sets: 3, pct: 60, note: "Tríceps", video: "https://www.youtube.com/results?search_query=extensiones+triceps+trx" },
+          { name: "Curl Inclinado Pesado", target: "3 series | 8 reps", sets: 3, pct: 28, note: "Bíceps", video: "https://www.youtube.com/results?search_query=curl+inclinado+biceps" }
+        ],
+        VIERNES: [
+          { name: "Hip Thrust Pesado con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 75, note: "Mantenimiento Glúteos", video: "https://www.youtube.com/results?search_query=hip+thrust+con+barra" },
+          { name: "Peso Muerto Piernas Rígidas con Barra", target: "3 series | 6-8 reps", sets: 3, pct: 65, note: "Isquios", video: "https://www.youtube.com/results?search_query=peso+muerto+piernas+rigidas+barra" },
+          { name: "Zancadas Caminando Pesadas", target: "3 series | 8-10 reps/pierna", sets: 3, pct: 35, note: "Piernas", video: "https://www.youtube.com/results?search_query=zancadas+caminando+mancuernas" },
+          { name: "Monster Walk Fuerte", target: "3 series | 12 pasos/lado", sets: 3, pct: 20, note: "Glúteos", video: "https://www.youtube.com/results?search_query=monster+walk+banda" },
+          { name: "Crunches Lastrados", target: "3 series | 10-12 reps", sets: 3, pct: 20, note: "Core", video: "https://www.youtube.com/results?search_query=crunches+lastrados" }
+        ]
+      }
+    };
+
+    let workoutData = JSON.parse(localStorage.getItem('m3_custom_workout_data')) || allMesocyclesData;
+    let currentMeso = parseInt(localStorage.getItem('m3_active_meso')) || 3;
+    let currentWeek = parseInt(localStorage.getItem('m3_active_week')) || 1;
+    let currentGoal = localStorage.getItem('m3_user_goal') || 'definicion';
+    let currentDay = "LUNES";
+    let bodyWeight = parseFloat(localStorage.getItem('m3_user_weight')) || 0;
+
+    // Obtener día de la semana actual
+    function getCurrentDayName() {
+      const daysMap = ['MIERCOLES', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'MIERCOLES'];
+      const todayIdx = new Date().getDay();
+      return daysMap[todayIdx];
+    }
+
+    // Inicializar Controles y Perfil
+    loadProfileData();
+    updateWelcomeBanner();
+
+    document.getElementById('user-goal-select').value = currentGoal;
+    document.getElementById('current-meso-select').value = currentMeso;
+    document.getElementById('current-week-select').value = currentWeek;
+
+    updateLabels();
+
+    // Sincronizar automáticamente con el día de hoy
+    const autoToday = getCurrentDayName();
+    switchDay(autoToday);
+
+    function updateWelcomeBanner() {
+      const name = localStorage.getItem('m3_prof_name') || '';
+      const messageElem = document.getElementById('welcome-message');
+      const dateElem = document.getElementById('current-date-str');
+
+      if (name.trim() !== '') {
+        messageElem.innerText = `¡Hola, ${name}! Tu reto para hoy:`;
+      } else {
+        messageElem.innerText = `¡Hola! Tu reto para hoy:`;
+      }
+
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const today = new Date();
+      dateElem.innerText = today.toLocaleDateString('es-ES', options);
+    }
+
+    function loadProfileData() {
+      const name = localStorage.getItem('m3_prof_name') || '';
+      const dob = localStorage.getItem('m3_prof_dob') || '';
+      const height = localStorage.getItem('m3_prof_height') || '';
+      const weight = localStorage.getItem('m3_user_weight') || '';
+
+      document.getElementById('prof-name').value = name;
+      document.getElementById('prof-dob').value = dob;
+      document.getElementById('prof-height').value = height;
+      document.getElementById('prof-weight').value = weight;
+
+      if (weight !== '') bodyWeight = parseFloat(weight);
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('prof-name').value;
+      const dob = document.getElementById('prof-dob').value;
+      const height = document.getElementById('prof-height').value;
+      const weight = document.getElementById('prof-weight').value;
+
+      localStorage.setItem('m3_prof_name', name);
+      localStorage.setItem('m3_prof_dob', dob);
+      localStorage.setItem('m3_prof_height', height);
+      localStorage.setItem('m3_user_weight', weight);
+
+      if (weight !== '') bodyWeight = parseFloat(weight);
+
+      updateWelcomeBanner();
+      alert('¡Perfil de datos personales actualizado correctamente!');
+    }
+
+    function updateLabels() {
+      document.querySelectorAll('.active-meso-num').forEach(el => el.innerText = currentMeso);
+      document.querySelectorAll('.active-week-num').forEach(el => el.innerText = currentWeek);
+    }
+
+    function switchMesocycle(mesoNum) {
+      currentMeso = parseInt(mesoNum);
+      localStorage.setItem('m3_active_meso', currentMeso);
+      updateLabels();
+      renderExercises();
+      loadHistory();
+    }
+
+    function switchWeek(weekNum) {
+      currentWeek = parseInt(weekNum);
+      localStorage.setItem('m3_active_week', currentWeek);
+      updateLabels();
+      renderExercises();
+      loadHistory();
+    }
+
+    function updateUserGoal(goal) {
+      currentGoal = goal;
+      localStorage.setItem('m3_user_goal', currentGoal);
+      renderExercises();
+    }
+
+    function updateExercisePct(exIdx, newPct) {
+      const pct = parseFloat(newPct) || 0;
+      workoutData[currentMeso][currentDay][exIdx].pct = pct;
+      localStorage.setItem('m3_custom_workout_data', JSON.stringify(workoutData));
+      renderExercises();
+    }
+
+    function switchDay(day) {
+      currentDay = day;
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const activeBtn = document.getElementById(`btn-${day}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const workoutView = document.getElementById('workout-view');
+      const restView = document.getElementById('rest-view');
+      const profileView = document.getElementById('profile-view');
+      const videosView = document.getElementById('videos-view');
+
+      workoutView.style.display = 'none';
+      restView.style.display = 'none';
+      profileView.style.display = 'none';
+      videosView.style.display = 'none';
+
+      if (day === 'MIERCOLES') {
+        restView.style.display = 'block';
+      } else if (day === 'PERFIL') {
+        profileView.style.display = 'block';
+      } else if (day === 'VIDEOS') {
+        videosView.style.display = 'block';
+        renderProgressVideos();
+      } else {
+        workoutView.style.display = 'block';
+        renderExercises();
+        loadHistory();
+      }
+    }
+
+    function renderExercises() {
+      const listContainer = document.getElementById('exercise-list');
+      listContainer.innerHTML = '';
+
+      const multWeek = weekPctMultipliers[currentWeek] || 1.0;
+      const multGoal = goalMultipliers[currentGoal] || 1.0;
+      const mesoList = workoutData[currentMeso] ? workoutData[currentMeso][currentDay] : [];
+
+      if (!mesoList) return;
+
+      const calcBaseWeight = bodyWeight > 0 ? bodyWeight : 70;
+
+      mesoList.forEach((ex, exIdx) => {
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+
+        const basePct = ex.pct !== undefined ? ex.pct : 50;
+        const currentPct = Math.round(basePct * multWeek * multGoal * 10) / 10;
+        const calcTotalKg = Math.round((calcBaseWeight * (currentPct / 100)) * 10) / 10;
+        let noteLabel = ex.note ? `(${ex.note})` : '';
+
+        let rowsHtml = '';
+        for (let s = 1; s <= ex.sets; s++) {
+          const keyBase = `m${currentMeso}_w${currentWeek}_${currentDay}_ex${exIdx}_s${s}`;
+          const savedKg = localStorage.getItem(`${keyBase}_kg`) || '';
+          const savedReps = localStorage.getItem(`${keyBase}_reps`) || '';
+          const savedDone = localStorage.getItem(`${keyBase}_done`) === 'true' ? 'checked' : '';
+          const savedVideo = localStorage.getItem(`${keyBase}_video`) || '';
+
+          rowsHtml += `
+            <div class="set-row">
+              <div class="set-main-line">
+                <span class="set-label">Serie ${s}</span>
+                <div class="input-group">
+                  <label>Kg:</label>
+                  <input type="number" step="0.5" id="${keyBase}_kg" value="${savedKg}" placeholder="${calcTotalKg}" oninput="autoSave('${keyBase}_kg', this.value)">
+                </div>
+                <div class="input-group">
+                  <label>Reps:</label>
+                  <input type="number" id="${keyBase}_reps" value="${savedReps}" placeholder="10" oninput="autoSave('${keyBase}_reps', this.value)">
+                </div>
+                <div class="input-group">
+                  <input type="checkbox" id="${keyBase}_done" ${savedDone} onchange="autoSave('${keyBase}_done', this.checked)">
+                </div>
+              </div>
+              
+              <div class="set-video-upload">
+                <span>📹 Vídeo Técnica:</span>
+                <input type="file" accept="video/*" onchange="saveExerciseVideo(this, '${keyBase}')">
+              </div>
+              <video id="${keyBase}_prev" class="set-video-preview" src="${savedVideo}" ${savedVideo ? 'controls' : ''} style="display: ${savedVideo ? 'block' : 'none'};"></video>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="exercise-header">
+            <div class="exercise-title">${ex.name}</div>
+            <a href="${ex.video}" target="_blank" rel="noopener" class="video-link">▶ Vídeo</a>
+          </div>
+          <div class="exercise-info">Objetivo: ${ex.target}</div>
+          <div class="calc-weight-tag">
+            📊 Carga F${currentMeso}W${currentWeek}: 
+            <input type="number" step="1" value="${currentPct}" onchange="updateExercisePct(${exIdx}, this.value)">%
+            de ${calcBaseWeight}kg ≈ <strong>${calcTotalKg} kg</strong> ${noteLabel}
+          </div>
+          ${rowsHtml}
+        `;
+        listContainer.appendChild(card);
+      });
+    }
+
+    function autoSave(key, value) {
+      localStorage.setItem(key, value);
+    }
+
+    function saveExerciseVideo(input, keyBase) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const videoDataUrl = e.target.result;
+          localStorage.setItem(`${keyBase}_video`, videoDataUrl);
+          
+          const videoElem = document.getElementById(`${keyBase}_prev`);
+          videoElem.src = videoDataUrl;
+          videoElem.style.display = 'block';
+          videoElem.controls = true;
+          alert('¡Vídeo de técnica guardado correctamente!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveWorkout() {
+      const now = new Date();
+      const timeStr = `${now.toLocaleDateString()} a las ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+      localStorage.setItem(`m_last_saved_m${currentMeso}_w${currentWeek}_${currentDay}`, timeStr);
+      alert(`¡Sesión del ${currentDay} (Fase ${currentMeso} - Sem ${currentWeek}) guardada!`);
+      loadHistory();
+    }
+
+    function resetCurrentDay() {
+      if (confirm(`¿Quieres borrar los registros del ${currentDay} (Fase ${currentMeso} - Sem ${currentWeek})?`)) {
+        const mesoList = workoutData[currentMeso][currentDay];
+        if (mesoList) {
+          mesoList.forEach((ex, exIdx) => {
+            for (let s = 1; s <= ex.sets; s++) {
+              const keyBase = `m${currentMeso}_w${currentWeek}_${currentDay}_ex${exIdx}_s${s}`;
+              localStorage.removeItem(`${keyBase}_kg`);
+              localStorage.removeItem(`${keyBase}_reps`);
+              localStorage.removeItem(`${keyBase}_done`);
+              localStorage.removeItem(`${keyBase}_video`);
+            }
+          });
+        }
+        renderExercises();
+      }
+    }
+
+    function loadHistory() {
+      const historyContainer = document.getElementById('history-content');
+      const lastSaved = localStorage.getItem(`m_last_saved_m${currentMeso}_w${currentWeek}_${currentDay}`);
+
+      if (!lastSaved) {
+        historyContainer.innerHTML = `<em>No hay registros guardados aún para este día.</em>`;
+        return;
+      }
+
+      let html = `<div style="margin-bottom: 8px;"><strong>Último guardado (F${currentMeso} S${currentWeek}):</strong> ${lastSaved}</div>`;
+      const mesoList = workoutData[currentMeso][currentDay];
+
+      if (mesoList) {
+        mesoList.forEach((ex, exIdx) => {
+          let setSummary = [];
+          for (let s = 1; s <= ex.sets; s++) {
+            const keyBase = `m${currentMeso}_w${currentWeek}_${currentDay}_ex${exIdx}_s${s}`;
+            const kg = localStorage.getItem(`${keyBase}_kg`);
+            const reps = localStorage.getItem(`${keyBase}_reps`);
+            if (kg || reps) {
+              setSummary.push(`S${s}: ${kg || 0}kg x ${reps || 0}reps`);
+            }
+          }
+          if (setSummary.length > 0) {
+            html += `<div class="history-item"><strong>${ex.name}:</strong> ${setSummary.join(' | ')}</div>`;
+          }
+        });
+      }
+
+      historyContainer.innerHTML = html;
+    }
+
+    function renderProgressVideos() {
+      const container = document.getElementById('progress-videos-container');
+      let foundVideos = false;
+      let html = '';
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('_video')) {
+          foundVideos = true;
+          const videoSrc = localStorage.getItem(key);
+          const parts = key.replace('m', '').split('_');
+          const meso = parts[0];
+          const week = parts[1].replace('w', '');
+          const day = parts[2];
+          const exIdx = parts[3].replace('ex', '');
+          const setNum = parts[4].replace('s', '');
+
+          let exName = "Ejercicio";
+          if (allMesocyclesData[meso] && allMesocyclesData[meso][day] && allMesocyclesData[meso][day][exIdx]) {
+            exName = allMesocyclesData[meso][day][exIdx].name;
+          }
+
+          html += `
+            <div class="progress-video-card">
+              <div style="font-weight:bold; font-size:0.82rem; color:var(--highlight); margin-bottom:6px;">
+                🏋️‍♂️ Fase ${meso} | Semana ${week} | ${day} — <strong>${exName}</strong> (Serie ${setNum})
+              </div>
+              <video src="${videoSrc}" controls style="width:100%; max-height:200px; border-radius:6px; background:black;"></video>
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = foundVideos ? html : '<p style="font-size:0.8rem; color: var(--text-muted);">No hay vídeos de técnica guardados en este momento.</p>';
+    }
+  </script>
+</body>
+</html>
