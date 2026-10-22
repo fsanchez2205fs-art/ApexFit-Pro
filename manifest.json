@@ -1,20 +1,20 @@
 {
-  "name": "ApexFit Pro - Control de Entrenamiento",
-  "short_name": "ApexFit",
+  "name": "ApexFix Pro - Control de Entrenamiento",
+  "short_name": "ApexFix Pro",
   "description": "Aplicación avanzada de control de entrenamiento, cargas y técnica por fases.",
-  "start_url": "./1entrenamiento.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#121824",
   "theme_color": "#ff4b4b",
   "icons": [
     {
-      "src": "logo-icono.png",
+      "src": "icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "logo-icono.png",
+      "src": "icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
