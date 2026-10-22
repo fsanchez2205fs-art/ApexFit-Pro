@@ -2,7 +2,7 @@
   "name": "ApexFix Pro - Control de Entrenamiento",
   "short_name": "ApexFix Pro",
   "description": "Aplicación avanzada de control de entrenamiento, cargas y técnica por fases.",
-  "start_url": "./",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121824",
   "theme_color": "#ff4b4b",
