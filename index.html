@@ -12,6 +12,9 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="theme-color" content="#121824">
 
+  <!-- 📊 LIBRERÍA CHART.JS PARA GRÁFICAS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --bg-primary: #121824;
@@ -28,7 +31,7 @@
       --week-active: #f59e0b;
       --nutrition-accent: #10b981;
       
-      /* Colores Estilo UI Nutrición */
+      /* Colores Estilo UI Nutrición y Métricas */
       --nutri-card-bg: #ffffff;
       --nutri-card-text: #1f2937;
       --nutri-subtext: #4b5563;
@@ -42,7 +45,7 @@
 
     header {
       background-color: var(--bg-card);
-      padding: 12px 15px;
+      padding: 10px 15px;
       text-align: center;
       border-bottom: 2px solid var(--accent);
       position: sticky;
@@ -50,7 +53,24 @@
       z-index: 100;
     }
 
-    header h1 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    /* Estilo del título con el Logo integrado */
+    .header-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .header-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header-brand h1 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
 
     .welcome-banner {
       background: linear-gradient(135deg, rgba(255, 75, 75, 0.15), rgba(56, 189, 248, 0.15));
@@ -130,9 +150,9 @@
       border: 1px solid var(--border-color);
     }
 
-    .rest-card { text-align: center; padding: 30px 20px; }
-    .rest-card h2 { color: var(--highlight); margin-bottom: 10px; font-size: 1.1rem; }
-    .rest-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+    .rest-card { text-align: center; padding: 20px; }
+    .rest-card h2 { color: var(--highlight); margin-bottom: 8px; font-size: 1.1rem; }
+    .rest-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
 
     .exercise-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 10px; }
     .exercise-title { font-size: 1rem; font-weight: bold; color: white; }
@@ -202,7 +222,7 @@
       font-size: 0.85rem;
     }
 
-    input[type="number"] { width: 60px; }
+    input[type="number"] { width: 65px; }
     input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--success); cursor: pointer; }
 
     .form-row {
@@ -214,7 +234,7 @@
       font-size: 0.85rem;
     }
 
-    .form-row input { text-align: left; padding: 6px 10px; width: 60%; }
+    .form-row input { text-align: right; padding: 6px 10px; width: 45%; }
 
     .set-video-upload {
       display: flex;
@@ -247,9 +267,27 @@
     .history-log h3 { font-size: 0.9rem; margin-bottom: 10px; color: var(--accent); }
     .history-item { font-size: 0.78rem; border-bottom: 1px solid var(--border-color); padding: 5px 0; color: var(--text-muted); }
 
-    /* =========================================
-       🎨 DISEÑO PESTAÑA NUTRICIÓN Y LISTA COMPRA
-       ========================================= */
+    /* Estilos Vista Progreso */
+    .chart-card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+    }
+    .chart-card h3 {
+      font-size: 0.95rem;
+      color: var(--highlight);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .chart-container {
+      position: relative;
+      height: 220px;
+      width: 100%;
+    }
+
+    /* Estilos Pestaña Nutrición */
     .nutri-day-selector {
       display: flex;
       gap: 6px;
@@ -299,18 +337,8 @@
       padding-right: 18px;
     }
 
-    .macro-main-cal .cal-num {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--nutri-card-text);
-      line-height: 1;
-    }
-
-    .macro-main-cal .cal-unit {
-      font-size: 0.78rem;
-      color: #6b7280;
-      margin-top: 4px;
-    }
+    .macro-main-cal .cal-num { font-size: 1.8rem; font-weight: 800; color: var(--nutri-card-text); line-height: 1; }
+    .macro-main-cal .cal-unit { font-size: 0.78rem; color: #6b7280; margin-top: 4px; }
 
     .macro-stats-group {
       display: flex;
@@ -321,7 +349,6 @@
     }
 
     .stat-box { text-align: center; }
-
     .stat-box .val { font-size: 1.05rem; font-weight: 800; line-height: 1.1; }
     .stat-box .lbl { font-size: 0.72rem; color: #6b7280; margin-top: 3px; }
 
@@ -344,7 +371,7 @@
     .meal-note { font-size: 0.8rem; color: #4b5563; font-style: italic; margin-bottom: 8px; }
     .meal-footer-cal { font-size: 0.88rem; color: #4b5563; font-weight: 600; margin-top: 10px; }
 
-    /* Estilos Vista Lista de la Compra */
+    /* Lista Compra Imprimible */
     .shopping-card {
       background: var(--nutri-card-bg);
       border-radius: 12px;
@@ -378,9 +405,7 @@
       gap: 5px;
     }
 
-    .shopping-category {
-      margin-bottom: 16px;
-    }
+    .shopping-category { margin-bottom: 16px; }
 
     .shopping-category h3 {
       font-size: 0.92rem;
@@ -392,10 +417,7 @@
       letter-spacing: 0.5px;
     }
 
-    .shopping-list {
-      list-style: none;
-      padding-left: 5px;
-    }
+    .shopping-list { list-style: none; padding-left: 5px; }
 
     .shopping-list li {
       font-size: 0.88rem;
@@ -406,14 +428,8 @@
       color: #374151;
     }
 
-    .shopping-list input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--success);
-      cursor: pointer;
-    }
+    .shopping-list input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; }
 
-    /* Regla para Impresión / Descarga en PDF */
     @media print {
       body * { visibility: hidden; }
       #printable-shopping-list, #printable-shopping-list * { visibility: visible; }
@@ -433,7 +449,11 @@
 <body>
 
   <header>
-    <h1>ApexFix Pro - Entrenamiento</h1>
+    <!-- CABECERA CON LOGO ELEGANTE -->
+    <div class="header-brand">
+      <img src="./icon-192x192.png" alt="ApexFix Logo">
+      <h1>ApexFix Pro - Entrenamiento</h1>
+    </div>
 
     <div class="top-controls">
       <div class="selector-box">
@@ -476,6 +496,7 @@
     <button class="day-btn" id="btn-JUEVES" onclick="switchDay('JUEVES')">JUEVES</button>
     <button class="day-btn" id="btn-VIERNES" onclick="switchDay('VIERNES')">VIERNES</button>
     <button class="day-btn" id="btn-NUTRICION" onclick="switchDay('NUTRICION')">NUTRICIÓN 🥗</button>
+    <button class="day-btn" id="btn-PROGRESO" onclick="switchDay('PROGRESO')">PROGRESO 📈</button>
     <button class="day-btn" id="btn-PERFIL" onclick="switchDay('PERFIL')">PERFIL 👤</button>
     <button class="day-btn" id="btn-VIDEOS" onclick="switchDay('VIDEOS')">VÍDEOS 🎬</button>
   </div>
@@ -505,12 +526,83 @@
       </div>
     </div>
 
-    <!-- VISTA DE MIÉRCOLES (DESCANSO) -->
+    <!-- VISTA DE MIÉRCOLES (DESCANSO Y MÉTRICAS) -->
     <div id="rest-view" style="display: none;">
       <div class="rest-card">
+        <h2 style="color:var(--week-active); font-size:1.2rem; margin-bottom:6px;">📐 ¡HOY DÍA DE MÉTRICAS!</h2>
         <h2>💤 Día de Descanso Activo</h2>
-        <p>Hoy no hay entrenamiento programado en esta fase.</p>
-        <p style="margin-top: 10px;">Aprovecha para reponer energía, estirar suavemente o realizar una caminata ligera para favorecer la eliminación de fatiga muscular y la quema de grasa.</p>
+        <p>Hoy no hay entrenamiento programado. Es el momento perfecto para registrar tus métricas y evaluar la evolución semanal.</p>
+        <p style="margin-top: 8px;">Aprovecha también para reponer energía, estirar suavemente o realizar una caminata ligera para favorecer la recuperación muscular.</p>
+      </div>
+
+      <div class="profile-card">
+        <h2 style="font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+          <span>📏 Registro de Métricas Semanales</span>
+          <span style="font-size:0.75rem; color:var(--week-active);" id="metrics-fase-week-tag">Fase 3 | Sem 1</span>
+        </h2>
+
+        <div class="form-row">
+          <label for="m-peso">Peso (kg):</label>
+          <input type="number" step="0.1" id="m-peso" placeholder="Ej: 75.5">
+        </div>
+
+        <div class="form-row">
+          <label for="m-grasa">Índice de Grasa Corporal (%):</label>
+          <input type="number" step="0.1" id="m-grasa" placeholder="Ej: 18.2">
+        </div>
+
+        <div class="form-row">
+          <label for="m-pecho">Diámetro Pecho (cm):</label>
+          <input type="number" step="0.5" id="m-pecho" placeholder="Ej: 102">
+        </div>
+
+        <div class="form-row">
+          <label for="m-cintura">Diámetro Cintura (cm):</label>
+          <input type="number" step="0.5" id="m-cintura" placeholder="Ej: 84">
+        </div>
+
+        <div class="form-row">
+          <label for="m-abdominal">Diámetro Abdominal (cm):</label>
+          <input type="number" step="0.5" id="m-abdominal" placeholder="Ej: 88">
+        </div>
+
+        <div class="form-row">
+          <label for="m-cadera">Diámetro Cadera (cm):</label>
+          <input type="number" step="0.5" id="m-cadera" placeholder="Ej: 96">
+        </div>
+
+        <div class="form-row">
+          <label for="m-brazo">Diámetro Brazo Dominante (cm):</label>
+          <input type="number" step="0.5" id="m-brazo" placeholder="Ej: 36">
+        </div>
+
+        <div class="form-row">
+          <label for="m-pierna">Diámetro Pierna Dominante (cm):</label>
+          <input type="number" step="0.5" id="m-pierna" placeholder="Ej: 56">
+        </div>
+
+        <div class="form-row">
+          <label for="m-gemelo">Diámetro Gemelo Pierna Dominante (cm):</label>
+          <input type="number" step="0.5" id="m-gemelo" placeholder="Ej: 38">
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-save" onclick="saveWeeklyMetrics()">Guardar Métricas</button>
+        </div>
+      </div>
+
+      <div class="history-log">
+        <h3>📊 Historial de Métricas Registradas</h3>
+        <div id="metrics-history-content">Cargando registros...</div>
+      </div>
+    </div>
+
+    <!-- VISTA DE PROGRESO (GRÁFICAS INDIVIDUALES) -->
+    <div id="progress-view" style="display: none;">
+      <div class="metrics-card">
+        <h2 style="font-size: 1.1rem; color: var(--highlight); margin-bottom: 12px; text-align:center;">📈 Gráficas de Evolución Temporal</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-align:center; margin-bottom: 15px;">Visualiza los cambios semanales acumulados en cada una de tus mediciones corporales.</p>
+        <div id="progress-charts-list">Cargando gráficas de progreso...</div>
       </div>
     </div>
 
@@ -569,19 +661,19 @@
       </div>
     </div>
 
-    <!-- VISTA DE PERFIL DE USUARIO -->
+    <!-- VISTA DE PERFIL DE USUARIO Y MÉTRICAS BASE -->
     <div id="profile-view" style="display: none;">
       <div class="profile-card">
-        <h2 style="font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px;">👤 Datos Personales del Atleta</h2>
+        <h2 style="font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px;">👤 Datos Personales y Métricas Base del Atleta</h2>
         
         <div class="form-row">
           <label for="prof-name">Nombre:</label>
-          <input type="text" id="prof-name" placeholder="Tu nombre">
+          <input type="text" id="prof-name" placeholder="Tu nombre" style="text-align:left; width:60%;">
         </div>
         
         <div class="form-row">
           <label for="prof-dob">Fecha de Nacimiento:</label>
-          <input type="date" id="prof-dob">
+          <input type="date" id="prof-dob" style="text-align:center; width:60%;">
         </div>
 
         <div class="form-row">
@@ -590,12 +682,54 @@
         </div>
 
         <div class="form-row">
-          <label for="prof-weight">Peso Inicial (kg):</label>
+          <label for="prof-weight">Peso Inicial Base (kg):</label>
           <input type="number" id="prof-weight" step="0.5" placeholder="Ej: 75" style="width: 100px;">
         </div>
 
+        <div class="form-row">
+          <label for="prof-base-grasa">Grasa Corporal Base (%):</label>
+          <input type="number" id="prof-base-grasa" step="0.1" placeholder="Ej: 20" style="width: 100px;">
+        </div>
+
+        <h3 style="font-size: 0.88rem; color: var(--week-active); margin: 15px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">📐 Medidas Corporales Base Inicio de Reto</h3>
+
+        <div class="form-row">
+          <label for="prof-base-pecho">Pecho Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-pecho" placeholder="Ej: 100">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-cintura">Cintura Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-cintura" placeholder="Ej: 86">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-abdominal">Abdominal Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-abdominal" placeholder="Ej: 90">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-cadera">Cadera Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-cadera" placeholder="Ej: 98">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-brazo">Brazo Dominante Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-brazo" placeholder="Ej: 35">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-pierna">Pierna Dominante Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-pierna" placeholder="Ej: 55">
+        </div>
+
+        <div class="form-row">
+          <label for="prof-base-gemelo">Gemelo Dominante Base (cm):</label>
+          <input type="number" step="0.5" id="prof-base-gemelo" placeholder="Ej: 37">
+        </div>
+
         <div class="actions">
-          <button type="button" class="btn btn-save" onclick="saveProfile()">Guardar Perfil</button>
+          <button type="button" class="btn btn-save" onclick="saveProfile()">Guardar Perfil Base</button>
         </div>
       </div>
     </div>
@@ -615,7 +749,7 @@
     const goalMultipliers = { definicion: 0.98, mantenimiento: 1.0, fuerza: 1.04 };
 
     // =========================================
-    // 🥗 BASE DE DATOS NUTRICIONAL COMPLETA
+    // 🥗 BASE DE DATOS NUTRICIONAL
     // =========================================
     const nutritionPhasesData = {
       1: {
@@ -860,7 +994,7 @@
           kcal: 1650, prot: 110, carbs: 150, fat: 50,
           meals: [
             { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin", "15 g Aceite de oliva virgen extra", "80 g Pechuga de pavo"], kcal: "360 kcal" },
-            { title: "Comida Libre (Flexibilidad 80/20)", note: "Disfruta de una comida libre manteniendo buen aporte proteico.", items: ["Comida a elección sin exceder porciones excessive"], kcal: "750 kcal" },
+            { title: "Comida Libre (Flexibilidad 80/20)", note: "Disfruta de una comida libre manteniendo buen aporte proteico.", items: ["Comida a elección sin exceder porciones excesivas"], kcal: "750 kcal" },
             { title: "Cena", items: ["120 g Pez espada o lubina a la plancha", "120 g Batata al horno", "1 Fruta fresca"], kcal: "540 kcal" }
           ]
         },
@@ -1220,6 +1354,7 @@
     let currentWeek = parseInt(localStorage.getItem('m3_active_week')) || 1;
     let currentGoal = localStorage.getItem('m3_user_goal') || 'definicion';
     let currentDay = "LUNES";
+    let chartInstances = {};
     
     function getCurrentDayName() {
       const daysMap = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
@@ -1259,39 +1394,49 @@
     }
 
     function loadProfileData() {
-      const name = localStorage.getItem('m3_prof_name') || '';
-      const dob = localStorage.getItem('m3_prof_dob') || '';
-      const height = localStorage.getItem('m3_prof_height') || '';
-      const weight = localStorage.getItem('m3_user_weight') || '';
+      document.getElementById('prof-name').value = localStorage.getItem('m3_prof_name') || '';
+      document.getElementById('prof-dob').value = localStorage.getItem('m3_prof_dob') || '';
+      document.getElementById('prof-height').value = localStorage.getItem('m3_prof_height') || '';
+      document.getElementById('prof-weight').value = localStorage.getItem('m3_user_weight') || '';
+      document.getElementById('prof-base-grasa').value = localStorage.getItem('m3_prof_base_grasa') || '';
+      document.getElementById('prof-base-pecho').value = localStorage.getItem('m3_prof_base_pecho') || '';
+      document.getElementById('prof-base-cintura').value = localStorage.getItem('m3_prof_base_cintura') || '';
+      document.getElementById('prof-base-abdominal').value = localStorage.getItem('m3_prof_base_abdominal') || '';
+      document.getElementById('prof-base-cadera').value = localStorage.getItem('m3_prof_base_cadera') || '';
+      document.getElementById('prof-base-brazo').value = localStorage.getItem('m3_prof_base_brazo') || '';
+      document.getElementById('prof-base-pierna').value = localStorage.getItem('m3_prof_base_pierna') || '';
+      document.getElementById('prof-base-gemelo').value = localStorage.getItem('m3_prof_base_gemelo') || '';
 
-      document.getElementById('prof-name').value = name;
-      document.getElementById('prof-dob').value = dob;
-      document.getElementById('prof-height').value = height;
-      document.getElementById('prof-weight').value = weight;
-
-      if (weight !== '') bodyWeight = parseFloat(weight);
+      const weight = localStorage.getItem('m3_user_weight');
+      if (weight) bodyWeight = parseFloat(weight);
     }
 
     function saveProfile() {
-      const name = document.getElementById('prof-name').value;
-      const dob = document.getElementById('prof-dob').value;
-      const height = document.getElementById('prof-height').value;
+      localStorage.setItem('m3_prof_name', document.getElementById('prof-name').value);
+      localStorage.setItem('m3_prof_dob', document.getElementById('prof-dob').value);
+      localStorage.setItem('m3_prof_height', document.getElementById('prof-height').value);
+      localStorage.setItem('m3_user_weight', document.getElementById('prof-weight').value);
+      localStorage.setItem('m3_prof_base_grasa', document.getElementById('prof-base-grasa').value);
+      localStorage.setItem('m3_prof_base_pecho', document.getElementById('prof-base-pecho').value);
+      localStorage.setItem('m3_prof_base_cintura', document.getElementById('prof-base-cintura').value);
+      localStorage.setItem('m3_prof_base_abdominal', document.getElementById('prof-base-abdominal').value);
+      localStorage.setItem('m3_prof_base_cadera', document.getElementById('prof-base-cadera').value);
+      localStorage.setItem('m3_prof_base_brazo', document.getElementById('prof-base-brazo').value);
+      localStorage.setItem('m3_prof_base_pierna', document.getElementById('prof-base-pierna').value);
+      localStorage.setItem('m3_prof_base_gemelo', document.getElementById('prof-base-gemelo').value);
+
       const weight = document.getElementById('prof-weight').value;
-
-      localStorage.setItem('m3_prof_name', name);
-      localStorage.setItem('m3_prof_dob', dob);
-      localStorage.setItem('m3_prof_height', height);
-      localStorage.setItem('m3_user_weight', weight);
-
       if (weight !== '') bodyWeight = parseFloat(weight);
 
       updateWelcomeBanner();
-      alert('¡Perfil de datos personales actualizado correctamente!');
+      alert('¡Perfil y Métricas Base guardados correctamente!');
     }
 
     function updateLabels() {
       document.querySelectorAll('.active-meso-num').forEach(el => el.innerText = currentMeso);
       document.querySelectorAll('.active-week-num').forEach(el => el.innerText = currentWeek);
+      const tag = document.getElementById('metrics-fase-week-tag');
+      if (tag) tag.innerText = `Fase ${currentMeso} | Sem ${currentWeek}`;
     }
 
     function switchMesocycle(mesoNum) {
@@ -1300,6 +1445,8 @@
       updateLabels();
       renderExercises();
       if (currentDay === 'NUTRICION') renderNutrition();
+      if (currentDay === 'MIERCOLES') loadWeeklyMetrics();
+      if (currentDay === 'PROGRESO') renderProgressCharts();
       loadHistory();
     }
 
@@ -1308,6 +1455,8 @@
       localStorage.setItem('m3_active_week', currentWeek);
       updateLabels();
       renderExercises();
+      if (currentDay === 'MIERCOLES') loadWeeklyMetrics();
+      if (currentDay === 'PROGRESO') renderProgressCharts();
       loadHistory();
     }
 
@@ -1333,18 +1482,24 @@
 
       const workoutView = document.getElementById('workout-view');
       const restView = document.getElementById('rest-view');
+      const progressView = document.getElementById('progress-view');
       const nutritionView = document.getElementById('nutrition-view');
       const profileView = document.getElementById('profile-view');
       const videosView = document.getElementById('videos-view');
 
       workoutView.style.display = 'none';
       restView.style.display = 'none';
+      progressView.style.display = 'none';
       nutritionView.style.display = 'none';
       profileView.style.display = 'none';
       videosView.style.display = 'none';
 
       if (day === 'MIERCOLES') {
         restView.style.display = 'block';
+        loadWeeklyMetrics();
+      } else if (day === 'PROGRESO') {
+        progressView.style.display = 'block';
+        renderProgressCharts();
       } else if (day === 'NUTRICION') {
         nutritionView.style.display = 'block';
         currentNutriDay = getCurrentDayName();
@@ -1364,6 +1519,209 @@
     function switchNutriDay(dayKey) {
       currentNutriDay = dayKey;
       renderNutrition();
+    }
+
+    // =========================================
+    // 📏 GESTIÓN DE MÉTRICAS SEMANALES Y HISTORIAL
+    // =========================================
+    function saveWeeklyMetrics() {
+      const key = `m3_metrics_f${currentMeso}_w${currentWeek}`;
+      const data = {
+        peso: document.getElementById('m-peso').value,
+        grasa: document.getElementById('m-grasa').value,
+        pecho: document.getElementById('m-pecho').value,
+        cintura: document.getElementById('m-cintura').value,
+        abdominal: document.getElementById('m-abdominal').value,
+        cadera: document.getElementById('m-cadera').value,
+        brazo: document.getElementById('m-brazo').value,
+        pierna: document.getElementById('m-pierna').value,
+        gemelo: document.getElementById('m-gemelo').value,
+        date: new Date().toLocaleDateString()
+      };
+
+      localStorage.setItem(key, JSON.stringify(data));
+      alert(`¡Métricas para la Fase ${currentMeso} - Semana ${currentWeek} guardadas con éxito!`);
+      loadWeeklyMetrics();
+    }
+
+    function loadWeeklyMetrics() {
+      const key = `m3_metrics_f${currentMeso}_w${currentWeek}`;
+      const saved = localStorage.getItem(key);
+
+      if (saved) {
+        const data = JSON.parse(saved);
+        document.getElementById('m-peso').value = data.peso || '';
+        document.getElementById('m-grasa').value = data.grasa || '';
+        document.getElementById('m-pecho').value = data.pecho || '';
+        document.getElementById('m-cintura').value = data.cintura || '';
+        document.getElementById('m-abdominal').value = data.abdominal || '';
+        document.getElementById('m-cadera').value = data.cadera || '';
+        document.getElementById('m-brazo').value = data.brazo || '';
+        document.getElementById('m-pierna').value = data.pierna || '';
+        document.getElementById('m-gemelo').value = data.gemelo || '';
+      } else {
+        document.getElementById('m-peso').value = '';
+        document.getElementById('m-grasa').value = '';
+        document.getElementById('m-pecho').value = '';
+        document.getElementById('m-cintura').value = '';
+        document.getElementById('m-abdominal').value = '';
+        document.getElementById('m-cadera').value = '';
+        document.getElementById('m-brazo').value = '';
+        document.getElementById('m-pierna').value = '';
+        document.getElementById('m-gemelo').value = '';
+      }
+
+      renderMetricsHistory();
+    }
+
+    function renderMetricsHistory() {
+      const container = document.getElementById('metrics-history-content');
+      let html = '';
+      let found = false;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('m3_metrics_f')) {
+          found = true;
+          const parts = k.replace('m3_metrics_f', '').split('_w');
+          const meso = parts[0];
+          const week = parts[1];
+          const data = JSON.parse(localStorage.getItem(k));
+
+          html += `
+            <div class="history-item" style="margin-bottom:6px; padding-bottom:6px;">
+              <strong style="color:var(--highlight);">Fase ${meso} | Semana ${week} (${data.date || 'Sin fecha'}):</strong><br>
+              ⚖️ Peso: <strong>${data.peso || '-'} kg</strong> | Grasa: <strong>${data.grasa || '-'}%</strong><br>
+              📐 Pecho: ${data.pecho || '-'}cm | Cintura: ${data.cintura || '-'}cm | Abdominal: ${data.abdominal || '-'}cm | Cadera: ${data.cadera || '-'}cm<br>
+              💪 Brazo: ${data.brazo || '-'}cm | Pierna: ${data.pierna || '-'}cm | Gemelo: ${data.gemelo || '-'}cm
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = found ? html : '<em>No hay registros de métricas guardados todavía.</em>';
+    }
+
+    // =========================================
+    // 📈 GRÁFICAS DE PROGRESO INDIVIDUALES
+    // =========================================
+    function renderProgressCharts() {
+      const container = document.getElementById('progress-charts-list');
+      
+      let records = [];
+      
+      // Añadir métricas base si existen
+      const basePeso = localStorage.getItem('m3_user_weight');
+      if (basePeso) {
+        records.push({
+          label: 'Base Inicio',
+          peso: parseFloat(basePeso) || null,
+          grasa: parseFloat(localStorage.getItem('m3_prof_base_grasa')) || null,
+          pecho: parseFloat(localStorage.getItem('m3_prof_base_pecho')) || null,
+          cintura: parseFloat(localStorage.getItem('m3_prof_base_cintura')) || null,
+          abdominal: parseFloat(localStorage.getItem('m3_prof_base_abdominal')) || null,
+          cadera: parseFloat(localStorage.getItem('m3_prof_base_cadera')) || null,
+          brazo: parseFloat(localStorage.getItem('m3_prof_base_brazo')) || null,
+          pierna: parseFloat(localStorage.getItem('m3_prof_base_pierna')) || null,
+          gemelo: parseFloat(localStorage.getItem('m3_prof_base_gemelo')) || null
+        });
+      }
+
+      // Buscar métricas guardadas por semanas
+      let weekKeys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('m3_metrics_f')) {
+          weekKeys.push(k);
+        }
+      }
+
+      weekKeys.sort();
+
+      weekKeys.forEach(k => {
+        const parts = k.replace('m3_metrics_f', '').split('_w');
+        const data = JSON.parse(localStorage.getItem(k));
+        records.push({
+          label: `F${parts[0]} W${parts[1]}`,
+          peso: parseFloat(data.peso) || null,
+          grasa: parseFloat(data.grasa) || null,
+          pecho: parseFloat(data.pecho) || null,
+          cintura: parseFloat(data.cintura) || null,
+          abdominal: parseFloat(data.abdominal) || null,
+          cadera: parseFloat(data.cadera) || null,
+          brazo: parseFloat(data.brazo) || null,
+          pierna: parseFloat(data.pierna) || null,
+          gemelo: parseFloat(data.gemelo) || null
+        });
+      });
+
+      if (records.length === 0) {
+        container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">No hay métricas registradas aún. Introduce datos el miércoles o en tu perfil para ver la evolución.</p>';
+        return;
+      }
+
+      const labels = records.map(r => r.label);
+
+      const metricsDef = [
+        { key: 'peso', title: '⚖️ Evolución de Peso (kg)', color: '#38bdf8' },
+        { key: 'grasa', title: '📊 Índice de Grasa Corporal (%)', color: '#f59e0b' },
+        { key: 'pecho', title: '📐 Diámetro Pecho (cm)', color: '#10b981' },
+        { key: 'cintura', title: '📐 Diámetro Cintura (cm)', color: '#ef4444' },
+        { key: 'abdominal', title: '📐 Diámetro Abdominal (cm)', color: '#8b5cf6' },
+        { key: 'cadera', title: '📐 Diámetro Cadera (cm)', color: '#ec4899' },
+        { key: 'brazo', title: '💪 Diámetro Brazo Dominante (cm)', color: '#14b8a6' },
+        { key: 'pierna', title: '🍗 Diámetro Pierna Dominante (cm)', color: '#f97316' },
+        { key: 'gemelo', title: '🦶 Diámetro Gemelo Dominante (cm)', color: '#a855f7' }
+      ];
+
+      container.innerHTML = '';
+
+      metricsDef.forEach((metric, idx) => {
+        const card = document.createElement('div');
+        card.className = 'chart-card';
+        const canvasId = `chart_${metric.key}`;
+        card.innerHTML = `
+          <h3>${metric.title}</h3>
+          <div class="chart-container">
+            <canvas id="${canvasId}"></canvas>
+          </div>
+        `;
+        container.appendChild(card);
+
+        const dataPoints = records.map(r => r[metric.key]);
+
+        setTimeout(() => {
+          const ctx = document.getElementById(canvasId).getContext('2d');
+          if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+
+          chartInstances[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: metric.title,
+                data: dataPoints,
+                borderColor: metric.color,
+                backgroundColor: metric.color + '22',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: metric.color
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#2e3a52' } },
+                y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#2e3a52' } }
+              }
+            }
+          });
+        }, 50);
+      });
     }
 
     // RENDER PESTAÑA NUTRICIÓN Y LISTA COMPRA
@@ -1418,7 +1776,6 @@
       }
     }
 
-    // RENDER LISTA DE LA COMPRA IMPRIMIBLE Y CON CHECKBOX
     function renderShoppingList() {
       const phaseData = shoppingListPhases[currentMeso] || shoppingListPhases[3];
       document.getElementById('shopping-phase-label').innerText = phaseData.name;
