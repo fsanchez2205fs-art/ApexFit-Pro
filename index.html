@@ -53,7 +53,6 @@
       z-index: 100;
     }
 
-    /* Estilo del título con el Logo integrado */
     .header-brand {
       display: flex;
       align-items: center;
@@ -247,13 +246,13 @@
       margin-top: 2px;
     }
 
-    .set-video-upload input[type="file"] { font-size: 0.7rem; color: var(--highlight); width: 140px; }
+    .set-video-upload input[type="file"] { font-size: 0.7rem; color: var(--highlight); width: 150px; }
 
     .set-video-preview {
       width: 100%;
-      max-height: 140px;
+      max-height: 180px;
       border-radius: 6px;
-      margin-top: 4px;
+      margin-top: 6px;
       background: black;
       display: none;
     }
@@ -285,6 +284,14 @@
       position: relative;
       height: 220px;
       width: 100%;
+    }
+
+    .progress-video-card {
+      background-color: var(--bg-card);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
     }
 
     /* Estilos Pestaña Nutrición */
@@ -449,7 +456,6 @@
 <body>
 
   <header>
-    <!-- CABECERA CON LOGO ELEGANTE -->
     <div class="header-brand">
       <img src="./icon-192x192.png" alt="ApexFix Logo">
       <h1>ApexFix Pro - Entrenamiento</h1>
@@ -747,6 +753,9 @@
   <script>
     const weekPctMultipliers = { 1: 1.0, 2: 1.03, 3: 1.06, 4: 1.10, 5: 1.13, 6: 0.90 };
     const goalMultipliers = { definicion: 0.98, mantenimiento: 1.0, fuerza: 1.04 };
+
+    // Objeto global para almacenar los vídeos en memoria activa durante la sesión
+    const sessionVideoBlobs = {};
 
     // =========================================
     // 🥗 BASE DE DATOS NUTRICIONAL
@@ -1832,7 +1841,7 @@
           const savedKg = localStorage.getItem(`${keyBase}_kg`) || '';
           const savedReps = localStorage.getItem(`${keyBase}_reps`) || '';
           const savedDone = localStorage.getItem(`${keyBase}_done`) === 'true' ? 'checked' : '';
-          const savedVideo = localStorage.getItem(`${keyBase}_video`) || '';
+          const activeUrl = sessionVideoBlobs[keyBase] || '';
 
           rowsHtml += `
             <div class="set-row">
@@ -1852,10 +1861,10 @@
               </div>
               
               <div class="set-video-upload">
-                <span>📹 Vídeo Técnica:</span>
-                <input type="file" accept="video/*" onchange="saveExerciseVideo(this, '${keyBase}')">
+                <span>📹 Grabación / Técnica:</span>
+                <input type="file" accept="video/*" capture="user" onchange="saveExerciseVideo(this, '${keyBase}')">
               </div>
-              <video id="${keyBase}_prev" class="set-video-preview" src="${savedVideo}" ${savedVideo ? 'controls' : ''} style="display: ${savedVideo ? 'block' : 'none'};"></video>
+              <video id="${keyBase}_prev" class="set-video-preview" src="${activeUrl}" ${activeUrl ? 'controls' : ''} style="display: ${activeUrl ? 'block' : 'none'};"></video>
             </div>
           `;
         }
@@ -1884,18 +1893,17 @@
     function saveExerciseVideo(input, keyBase) {
       const file = input.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const videoDataUrl = e.target.result;
-          localStorage.setItem(`${keyBase}_video`, videoDataUrl);
-          
-          const videoElem = document.getElementById(`${keyBase}_prev`);
-          videoElem.src = videoDataUrl;
-          videoElem.style.display = 'block';
+        // Se crea un enlace directo temporal sin saturar localStorage
+        const objectUrl = URL.createObjectURL(file);
+        sessionVideoBlobs[keyBase] = objectUrl;
+
+        const videoElem = document.getElementById(`${keyBase}_prev`);
+        if (videoElem) {
+          videoElem.src = objectUrl;
           videoElem.controls = true;
-          alert('¡Vídeo de técnica guardado correctamente!');
-        };
-        reader.readAsDataURL(file);
+          videoElem.style.display = 'block';
+        }
+        alert('¡Vídeo cargado correctamente! Ya puedes reproducirlo.');
       }
     }
 
@@ -1917,7 +1925,7 @@
               localStorage.removeItem(`${keyBase}_kg`);
               localStorage.removeItem(`${keyBase}_reps`);
               localStorage.removeItem(`${keyBase}_done`);
-              localStorage.removeItem(`${keyBase}_video`);
+              delete sessionVideoBlobs[keyBase];
             }
           });
         }
@@ -1962,35 +1970,32 @@
       let foundVideos = false;
       let html = '';
 
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.includes('_video')) {
-          foundVideos = true;
-          const videoSrc = localStorage.getItem(key);
-          const parts = key.replace('m', '').split('_');
-          const meso = parts[0];
-          const week = parts[1].replace('w', '');
-          const day = parts[2];
-          const exIdx = parts[3].replace('ex', '');
-          const setNum = parts[4].replace('s', '');
+      Object.keys(sessionVideoBlobs).forEach(keyBase => {
+        foundVideos = true;
+        const videoSrc = sessionVideoBlobs[keyBase];
+        const parts = keyBase.replace('m', '').split('_');
+        const meso = parts[0];
+        const week = parts[1].replace('w', '');
+        const day = parts[2];
+        const exIdx = parts[3].replace('ex', '');
+        const setNum = parts[4].replace('s', '');
 
-          let exName = "Ejercicio";
-          if (allMesocyclesData[meso] && allMesocyclesData[meso][day] && allMesocyclesData[meso][day][exIdx]) {
-            exName = allMesocyclesData[meso][day][exIdx].name;
-          }
-
-          html += `
-            <div class="progress-video-card">
-              <div style="font-weight:bold; font-size:0.82rem; color:var(--highlight); margin-bottom:6px;">
-                🏋️‍♂️ Fase ${meso} | Semana ${week} | ${day} — <strong>${exName}</strong> (Serie ${setNum})
-              </div>
-              <video src="${videoSrc}" controls style="width:100%; max-height:200px; border-radius:6px; background:black;"></video>
-            </div>
-          `;
+        let exName = "Ejercicio";
+        if (allMesocyclesData[meso] && allMesocyclesData[meso][day] && allMesocyclesData[meso][day][exIdx]) {
+          exName = allMesocyclesData[meso][day][exIdx].name;
         }
-      }
 
-      container.innerHTML = foundVideos ? html : '<p style="font-size:0.8rem; color: var(--text-muted);">No hay vídeos de técnica guardados en este momento.</p>';
+        html += `
+          <div class="progress-video-card">
+            <div style="font-weight:bold; font-size:0.82rem; color:var(--highlight); margin-bottom:6px;">
+              🏋️‍♂️ Fase ${meso} | Semana ${week} | ${day} — <strong>${exName}</strong> (Serie ${setNum})
+            </div>
+            <video src="${videoSrc}" controls style="width:100%; max-height:200px; border-radius:6px; background:black;"></video>
+          </div>
+        `;
+      });
+
+      container.innerHTML = foundVideos ? html : '<p style="font-size:0.8rem; color: var(--text-muted); text-align:center;">No hay vídeos grabados en la sesión actual.</p>';
     }
   </script>
 </body>
