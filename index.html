@@ -6,10 +6,10 @@
   <title>ApexFix Pro - Control de Entrenamiento</title>
 
   <!-- 📱 ENLACES PARA EL LOGO Y LA INSTALACIÓN EN EL MÓVIL (PWA) -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512x512.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="theme-color" content="#121824">
 
   <style>
@@ -26,6 +26,15 @@
       --info-bg: rgba(56, 189, 248, 0.1);
       --highlight: #38bdf8;
       --week-active: #f59e0b;
+      --nutrition-accent: #10b981;
+      
+      /* Colores Estilo UI Captura Nutrición */
+      --nutri-card-bg: #ffffff;
+      --nutri-card-text: #1f2937;
+      --nutri-subtext: #4b5563;
+      --prot-color: #10b981;
+      --carb-color: #3b82f6;
+      --fat-color: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -43,7 +52,6 @@
 
     header h1 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 
-    /* Banner de Bienvenida */
     .welcome-banner {
       background: linear-gradient(135deg, rgba(255, 75, 75, 0.15), rgba(56, 189, 248, 0.15));
       border: 1px solid var(--border-color);
@@ -75,17 +83,16 @@
       font-size: 0.78rem;
     }
 
-    .selector-box select, .selector-box input {
+    .selector-box select {
       background: transparent;
       border: none;
       border-bottom: 1px solid var(--accent);
-      color: white;
+      color: var(--highlight);
       font-weight: bold;
       text-align: center;
       font-size: 0.8rem;
+      cursor: pointer;
     }
-
-    .selector-box select { color: var(--highlight); cursor: pointer; }
 
     .day-selector {
       display: flex;
@@ -101,13 +108,13 @@
       background: transparent;
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 6px 10px;
+      padding: 6px 8px;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
       flex: 1;
       margin: 0 2px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       white-space: nowrap;
     }
 
@@ -123,11 +130,7 @@
       border: 1px solid var(--border-color);
     }
 
-    .rest-card {
-      text-align: center;
-      padding: 30px 20px;
-    }
-
+    .rest-card { text-align: center; padding: 30px 20px; }
     .rest-card h2 { color: var(--highlight); margin-bottom: 10px; font-size: 1.1rem; }
     .rest-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
 
@@ -184,14 +187,8 @@
       gap: 6px;
     }
 
-    .set-main-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
+    .set-main-line { display: flex; align-items: center; justify-content: space-between; }
     .set-label { font-size: 0.82rem; font-weight: bold; width: 60px; }
-
     .input-group { display: flex; align-items: center; gap: 5px; }
     .input-group label { font-size: 0.72rem; color: var(--text-muted); }
 
@@ -250,7 +247,136 @@
     .history-log h3 { font-size: 0.9rem; margin-bottom: 10px; color: var(--accent); }
     .history-item { font-size: 0.78rem; border-bottom: 1px solid var(--border-color); padding: 5px 0; color: var(--text-muted); }
 
-    .progress-video-card { background: var(--bg-primary); padding: 10px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border-color); }
+    /* =========================================
+       🎨 DISEÑO PESTAÑA NUTRICIÓN (ESTILO CAPTURA)
+       ========================================= */
+    .nutri-day-selector {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .nutri-day-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nutri-day-btn.active {
+      background: var(--nutrition-accent);
+      color: white;
+      border-color: var(--nutrition-accent);
+    }
+
+    /* Tarjeta Macro Superior */
+    .macro-header-card {
+      background: var(--nutri-card-bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+
+    .macro-main-cal {
+      text-align: center;
+      border-right: 1px solid #e5e7eb;
+      padding-right: 18px;
+    }
+
+    .macro-main-cal .cal-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--nutri-card-text);
+      line-height: 1;
+    }
+
+    .macro-main-cal .cal-unit {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .macro-stats-group {
+      display: flex;
+      gap: 15px;
+      flex: 1;
+      justify-content: space-around;
+      padding-left: 10px;
+    }
+
+    .stat-box { text-align: center; }
+
+    .stat-box .val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .stat-box .lbl {
+      font-size: 0.72rem;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    .val-prot { color: var(--prot-color); }
+    .val-carb { color: var(--carb-color); }
+    .val-fat { color: var(--fat-color); }
+
+    /* Tarjeta de Meal Individual */
+    .meal-block {
+      margin-bottom: 20px;
+    }
+
+    .meal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .meal-card {
+      background: var(--nutri-card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .meal-item-list {
+      list-style: none;
+      margin-bottom: 15px;
+    }
+
+    .meal-item-list li {
+      font-size: 0.88rem;
+      color: var(--nutri-card-text);
+      padding: 5px 0;
+      line-height: 1.4;
+    }
+
+    .meal-note {
+      font-size: 0.8rem;
+      color: #4b5563;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .meal-footer-cal {
+      font-size: 0.88rem;
+      color: #4b5563;
+      font-weight: 600;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -298,13 +424,14 @@
     <button class="day-btn" id="btn-MIERCOLES" onclick="switchDay('MIERCOLES')">MIÉRCOLES 💤</button>
     <button class="day-btn" id="btn-JUEVES" onclick="switchDay('JUEVES')">JUEVES</button>
     <button class="day-btn" id="btn-VIERNES" onclick="switchDay('VIERNES')">VIERNES</button>
+    <button class="day-btn" id="btn-NUTRICION" onclick="switchDay('NUTRICION')">NUTRICIÓN 🥗</button>
     <button class="day-btn" id="btn-PERFIL" onclick="switchDay('PERFIL')">PERFIL 👤</button>
     <button class="day-btn" id="btn-VIDEOS" onclick="switchDay('VIDEOS')">VÍDEOS 🎬</button>
   </div>
 
   <div class="container">
 
-    <!-- BANNER DE BIENVENIDA CON FECHA -->
+    <!-- BANNER DE BIENVENIDA -->
     <div class="welcome-banner" id="welcome-banner">
       <h2 id="welcome-message">¡Hola! Tu reto para hoy:</h2>
       <p>Fecha: <span class="welcome-date" id="current-date-str"></span></p>
@@ -334,6 +461,44 @@
         <p>Hoy no hay entrenamiento programado en esta fase.</p>
         <p style="margin-top: 10px;">Aprovecha para reponer energía, estirar suavemente o realizar una caminata ligera para favorecer la eliminación de fatiga muscular y la quema de grasa.</p>
       </div>
+    </div>
+
+    <!-- VISTA DE NUTRICIÓN -->
+    <div id="nutrition-view" style="display: none;">
+      <div class="nutri-day-selector">
+        <button class="nutri-day-btn active" id="nday-LUNES" onclick="switchNutriDay('LUNES')">Lunes</button>
+        <button class="nutri-day-btn" id="nday-MARTES" onclick="switchNutriDay('MARTES')">Martes</button>
+        <button class="nutri-day-btn" id="nday-MIERCOLES" onclick="switchNutriDay('MIERCOLES')">Miércoles</button>
+        <button class="nutri-day-btn" id="nday-JUEVES" onclick="switchNutriDay('JUEVES')">Jueves</button>
+        <button class="nutri-day-btn" id="nday-VIERNES" onclick="switchNutriDay('VIERNES')">Viernes</button>
+        <button class="nutri-day-btn" id="nday-SABADO" onclick="switchNutriDay('SABADO')">Sábado</button>
+        <button class="nutri-day-btn" id="nday-DOMINGO" onclick="switchNutriDay('DOMINGO')">Domingo</button>
+      </div>
+
+      <!-- Tarjeta Macros Header -->
+      <div class="macro-header-card">
+        <div class="macro-main-cal">
+          <div class="cal-num" id="nutri-header-cal">1227</div>
+          <div class="cal-unit">kcal</div>
+        </div>
+        <div class="macro-stats-group">
+          <div class="stat-box">
+            <div class="val val-prot" id="nutri-header-prot">79 g</div>
+            <div class="lbl">Proteínas</div>
+          </div>
+          <div class="stat-box">
+            <div class="val val-carb" id="nutri-header-carb">162 g</div>
+            <div class="lbl">Carbs</div>
+          </div>
+          <div class="stat-box">
+            <div class="val val-fat" id="nutri-header-fat">30 g</div>
+            <div class="lbl">Grasas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose de Comidas -->
+      <div id="nutri-meals-container"></div>
     </div>
 
     <!-- VISTA DE PERFIL DE USUARIO -->
@@ -380,6 +545,275 @@
   <script>
     const weekPctMultipliers = { 1: 1.0, 2: 1.03, 3: 1.06, 4: 1.10, 5: 1.13, 6: 0.90 };
     const goalMultipliers = { definicion: 0.98, mantenimiento: 1.0, fuerza: 1.04 };
+
+    // =========================================
+    // 🥗 BASE DE DATOS NUTRICIONAL COMPLETA (FASES 1, 2, 3 Y 4)
+    // =========================================
+    const nutritionPhasesData = {
+      // --- FASE 1 ---
+      1: {
+        LUNES: {
+          kcal: 1227, prot: 79, carbs: 162, fat: 30,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno", "15 g Aceite de oliva virgen extra", "20 g Jamón serrano"], kcal: "348 kcal" },
+            { title: "Comida", items: ["100 g Ternera (filete o hamburguesa)", "100 g Arroz", "100 g Piña"], kcal: "567 kcal" },
+            { title: "Snack", note: "Elige entre 1 yogur griego natural o 1 yogur de proteínas del sabor que más te guste.", items: ["1 Yogur de proteínas"], kcal: "" },
+            { title: "Cena", note: "Aliño de patata cocida con cebolla, atún o melva y pimiento rojo asado.", items: ["100 g Patata cocida (Mercadona bote)", "100 g Atún al natural", "100 g Cebolla", "100 g Pimiento rojo asado", "100 g Mandarina"], kcal: "" }
+          ]
+        },
+        MARTES: {
+          kcal: 1762, prot: 107, carbs: 177, fat: 69,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral rebanadas", "20 g Aceite de oliva virgen extra", "Lomo embuchado MERCADONA"], kcal: "571 kcal" },
+            { title: "Comida", note: "Arroz tres delicias. Curry opcional.", items: ["100 g Arroz", "100 g Huevo fresco", "100 g Fiambre de pavo", "100 g Zanahoria cruda", "100 g Guisantes en conserva"], kcal: "786 kcal" },
+            { title: "Snack", note: "Un puñado de frutos secos.", items: ["30 g Frutos secos"], kcal: "170 kcal" },
+            { title: "Cena", note: "Hacerlo al horno.", items: ["100 g Merluza", "100 g Batata", "100 g Melocotón"], kcal: "236 kcal" }
+          ]
+        },
+        MIERCOLES: {
+          kcal: 1620, prot: 98, carbs: 167, fat: 66,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin MERCADONA", "10 g Aceite de oliva virgen extra", "100 g Lacón"], kcal: "619 kcal" },
+            { title: "Comida", items: ["100 g Cuscús", "100 g Calabacín", "100 g Pimiento rojo", "100 g Pimiento verde", "100 g Zanahoria cruda", "100 g Tiras de pollo al natural MERCADONA"], kcal: "596 kcal" },
+            { title: "Snack", items: ["100 g Manzana"], kcal: "50 kcal" },
+            { title: "Cena", note: "Sofrreír ajo con aceite, añadir espinacas y garbanzos.", items: ["100 g Espinaca hervida", "100 g Garbanzo cocido", "100 g Leche de coco", "100 g Ajo", "1 Gelatina + proteína MERCADONA"], kcal: "355 kcal" }
+          ]
+        },
+        JUEVES: {
+          kcal: 1716, prot: 122, carbs: 172, fat: 66,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno", "100 g Pollo asado al horno La Carloteña", "15 g Aceite de oliva virgen extra"], kcal: "444 kcal" },
+            { title: "Comida", items: ["100 g Tortilla a la francesa", "100 g Jamón serrano", "100 g Pimiento verde", "100 g Cebolla", "100 g Ajo", "100 g Pera"], kcal: "62 kcal" },
+            { title: "Snack", items: ["100 g Queso fresco batido Quark", "100 g Arándanos"], kcal: "92 kcal" },
+            { title: "Cena", items: ["100 g Macarrones integrales", "100 g Tomate triturado natural", "100 g Carne picada de pollo", "100 g Piña"], kcal: "558 kcal" }
+          ]
+        },
+        VIERNES: {
+          kcal: 1474, prot: 106, carbs: 71, fat: 82,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral rebanadas", "15 g Aceite de oliva virgen extra", "100 g Atún al natural"], kcal: "423 kcal" },
+            { title: "Comida", note: "Pisto de verduras con huevo.", items: ["100 g Pisto de verduras", "100 g Huevo fresco", "100 g Pechuga de pollo fresca", "100 g Fresas"], kcal: "419 kcal" },
+            { title: "Snack", items: ["30 g Nueces"], kcal: "214 kcal" },
+            { title: "Cena", note: "Guisantes cocidos con ajo y jamón.", items: ["100 g Guisantes congelados hervidos", "100 g Jamón serrano", "100 g Naranja"], kcal: "418 kcal" }
+          ]
+        },
+        SABADO: {
+          kcal: 625, prot: 49, carbs: 49, fat: 23,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral", "15 g Aceite de oliva virgen extra", "100 g Pechuga de pavo asada El Pozo"], kcal: "373 kcal" },
+            { title: "Comida Libre", note: "Priorizar la ingesta de proteínas y cuidado con estropear el esfuerzo semanal.", items: ["100 g Agua mineral de mineralización débil"], kcal: "0 kcal" },
+            { title: "Cena", note: "Wok de verduras con pollo y especias.", items: ["100 g Menestra de verduras", "100 g Pechuga de pollo fresca", "100 g Granada"], kcal: "253 kcal" }
+          ]
+        },
+        DOMINGO: {
+          kcal: 2089, prot: 148, carbs: 187, fat: 80,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral rebanadas", "15 g Aceite de oliva virgen extra", "100 g Lomo embuchado MERCADONA"], kcal: "526 kcal" },
+            { title: "Comida", items: ["100 g Pulpo", "100 g Patata cocida Ybarra", "100 g Pimentón en polvo"], kcal: "479 kcal" },
+            { title: "Snack", items: ["100 g Ciruela amarilla con piel"], kcal: "48 kcal" },
+            { title: "Cena", items: ["100 g Canónigos", "100 g Melva", "100 g Huevo duro", "100 g Cebolla", "100 g Maíz crudo", "100 g Queso feta"], kcal: "1036 kcal" }
+          ]
+        }
+      },
+
+      // --- FASE 2 ---
+      2: {
+        LUNES: {
+          kcal: 2343, prot: 140, carbs: 54, fat: 174,
+          meals: [
+            { title: "Desayuno", note: "El pan de centeno del sitio que quieras (panadería mejor).", items: ["100 g Café, infusión", "70 g Pan centeno MERCADONA", "100 g Jamón serrano", "100 g Aceite de oliva virgen extra"], kcal: "1358 kcal" },
+            { title: "Comida", items: ["100 g Pisto de verduras (brick o casero)", "100 g Huevo fresco", "100 g Pechuga de pavo a la plancha", "100 g Mandarina"], kcal: "427 kcal" },
+            { title: "Snack", note: "Un puñado sólo.", items: ["30 g Pistacho"], kcal: "178 kcal" },
+            { title: "Cena", items: ["100 g Tortilla a la francesa", "100 g Gamba hervida", "100 g Atún al natural"], kcal: "379 kcal" }
+          ]
+        },
+        MARTES: {
+          kcal: 1455, prot: 106, carbs: 122, fat: 60,
+          meals: [
+            { title: "Desayuno", items: ["100 g Pan de espelta integral MERCADONA", "100 g Café, infusión", "20 g Aceite de oliva virgen extra", "100 g Lomo embuchado Carrefour"], kcal: "691 kcal" },
+            { title: "Comida", items: ["100 g Bacalao", "100 g Patata", "100 g Pimiento rojo crudo", "100 g Cebolla", "100 g Tomate", "100 g Melocotón"], kcal: "293 kcal" },
+            { title: "Snack", items: ["100 g Arándanos"], kcal: "57 kcal" },
+            { title: "Cena", note: "Comprar la natilla de marca '+proteína' de Mercadona (envase rojo).", items: ["100 g Hamburguesa pollo de campo gruesa MERCADONA", "100 g Huevo fresco", "100 g Calabacín", "100 g Natilla de vainilla MERCADONA"], kcal: "414 kcal" }
+          ]
+        },
+        MIERCOLES: {
+          kcal: 1743, prot: 88, carbs: 209, fat: 56,
+          meals: [
+            { title: "Desayuno", items: ["70 g Pan integral Thin 99 kcal MERCADONA", "100 g Café, infusión", "100 g Lacón", "15 g Aceite de oliva virgen extra"], kcal: "528 kcal" },
+            { title: "Comida", items: ["100 g Ternera", "100 g Arroz", "100 g Piña"], kcal: "567 kcal" },
+            { title: "Snack", items: ["30 g Pistacho"], kcal: "178 kcal" },
+            { title: "Cena", note: "Mezcla quinoa con champiñones y espárragos salteados.", items: ["100 g Quinoa", "100 g Champiñones", "100 g Espárragos trigueros crudos", "100 g Yogur + proteínas natural MERCADONA"], kcal: "469 kcal" }
+          ]
+        },
+        JUEVES: {
+          kcal: 2039, prot: 108, carbs: 91, fat: 146,
+          meals: [
+            { title: "Desayuno", items: ["100 g Pan de centeno integral LIDL", "100 g Café, infusión", "100 g Aceite de oliva virgen extra", "100 g Pechuga de pavo asada El Pozo"], kcal: "1165 kcal" },
+            { title: "Comida", note: "Pollo asado al horno entero.", items: ["100 g Pollo asado al horno La Carloteña", "100 g Gazpacho"], kcal: "194 kcal" },
+            { title: "Snack", items: ["100 g Manzana"], kcal: "50 kcal" },
+            { title: "Cena", note: "Dora el ajo con tacos de jamón serrano y un huevo sobre guisantes.", items: ["100 g Guisante congelado MERCADONA", "100 g Huevo fresco", "100 g Ajo", "100 g Jamón serrano", "100 g Gelatina + proteína MERCADONA"], kcal: "630 kcal" }
+          ]
+        },
+        VIERNES: {
+          kcal: 1534, prot: 101, carbs: 118, fat: 69,
+          meals: [
+            { title: "Desayuno", items: ["70 g Pan de espelta integral MERCADONA", "100 g Café, infusión", "100 g Tiras de pollo al natural MERCADONA", "15 g Aceite de oliva virgen extra"], kcal: "465 kcal" },
+            { title: "Comida", items: ["100 g Garbanzos cocidos escurridos Carrefour", "100 g Bacalao", "100 g Naranja"], kcal: "214 kcal" },
+            { title: "Snack", items: ["100 g Anacardo crudo"], kcal: "584 kcal" },
+            { title: "Cena", items: ["100 g Pechuga de pollo FRESCA", "100 g Setas", "100 g Salsa de soja", "100 g Queso fresco batido Quark con arándanos"], kcal: "325 kcal" }
+          ]
+        },
+        SABADO: {
+          kcal: 796, prot: 70, carbs: 51, fat: 30,
+          meals: [
+            { title: "Desayuno", items: ["70 g Pan integral Thin MERCADONA", "100 g Café, infusión", "20 g Aceite de oliva virgen extra", "100 g Atún al natural"], kcal: "472 kcal" },
+            { title: "Comida Libre", note: "COMIDA LIBRE (prioriza proteínas, cuidado con no tirar por tierra todo el esfuerzo).", items: ["100 g Agua mineral de mineralización débil"], kcal: "0 kcal" },
+            { title: "Cena", items: ["100 g Pez espada", "100 g Batata", "100 g Melocotón"], kcal: "271 kcal" }
+          ]
+        },
+        DOMINGO: {
+          kcal: 1850, prot: 125, carbs: 160, fat: 70,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno", "15 g Aceite de oliva virgen extra", "100 g Lomo embuchado"], kcal: "526 kcal" },
+            { title: "Comida", items: ["100 g Pulpo cocido", "100 g Patata cocida", "100 g Pimentón y aceite de oliva"], kcal: "479 kcal" },
+            { title: "Snack", items: ["100 g Fruta fresca o 30g Frutos secos"], kcal: "120 kcal" },
+            { title: "Cena", items: ["100 g Pechuga de pollo a la plancha", "100 g Ensalada variada", "100 g Queso fresco Quark"], kcal: "350 kcal" }
+          ]
+        }
+      },
+
+      // --- FASE 3 (DEFINICIÓN Y PÉRDIDA DE GRASA) ---
+      3: {
+        LUNES: {
+          kcal: 1390, prot: 128, carbs: 110, fat: 42,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión sin azúcar", "60 g Pan de centeno integral", "10 g Aceite de oliva virgen extra", "80 g Pechuga de pavo en lonchas"], kcal: "310 kcal" },
+            { title: "Comida", note: "Déficit calórico enfocado en preservar masa muscular.", items: ["120 g Pechuga de pollo a la plancha", "80 g Arroz cocido", "150 g Brócoli al vapor", "100 g Piña natural"], kcal: "480 kcal" },
+            { title: "Snack", items: ["150 g Queso fresco batido 0% MERCADONA", "50 g Arándanos o fresas"], kcal: "110 kcal" },
+            { title: "Cena", note: "Cena ligera rica en proteína y verdura saciante.", items: ["120 g Merluza a la plancha", "150 g Ensalada de canónigos y tomate", "100 g Patata cocida", "1 Huevo duro"], kcal: "490 kcal" }
+          ]
+        },
+        MARTES: {
+          kcal: 1420, prot: 132, carbs: 105, fat: 44,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan de espelta integral", "10 g Aceite de oliva virgen extra", "80 g Lomo embuchado"], kcal: "330 kcal" },
+            { title: "Comida", items: ["120 g Filete de ternera magra", "100 g Batata o boniato al horno", "150 g Espárragos trigueros a la plancha"], kcal: "510 kcal" },
+            { title: "Snack", items: ["1 Yogur proteico sabor vainilla/fresa MERCADONA", "15 g Nueces (un puñado pequeño)"], kcal: "160 kcal" },
+            { title: "Cena", items: ["120 g Atún al natural", "150 g Pisto de verduras sin azúcar", "1 Huevo a la plancha"], kcal: "420 kcal" }
+          ]
+        },
+        MIERCOLES: {
+          kcal: 1350, prot: 125, carbs: 100, fat: 40,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan integral Thin", "10 g Aceite de oliva virgen extra", "80 g Lacón o jamón cocido"], kcal: "290 kcal" },
+            { title: "Comida", items: ["120 g Bacalao fresco", "80 g Quinoa cocida", "150 g Calabacín y pimiento salteados"], kcal: "460 kcal" },
+            { title: "Snack", items: ["100 g Manzana verde", "1 Gelatina + proteína MERCADONA"], kcal: "110 kcal" },
+            { title: "Cena", items: ["120 g Tiras de pollo al natural", "150 g Espinacas hervidas con ajo", "80 g Garbanzos cocidos"], kcal: "490 kcal" }
+          ]
+        },
+        JUEVES: {
+          kcal: 1410, prot: 130, carbs: 112, fat: 43,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan de centeno", "10 g Aceite de oliva virgen extra", "80 g Pollo asado La Carloteña"], kcal: "320 kcal" },
+            { title: "Comida", items: ["120 g Hamburguesa de pavo/pollo", "100 g Macarrones integrales cocidos", "100 g Tomate natural triturado"], kcal: "500 kcal" },
+            { title: "Snack", items: ["150 g Queso Quark 0%", "10 g Frutos secos variados"], kcal: "140 kcal" },
+            { title: "Cena", items: ["120 g Tortilla de 1 huevo entero y 2 claras", "100 g Gambas hervidas", "150 g Ensalada verde"], kcal: "450 kcal" }
+          ]
+        },
+        VIERNES: {
+          kcal: 1380, prot: 126, carbs: 108, fat: 41,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan de espelta integral", "10 g Aceite de oliva virgen extra", "80 g Atún al natural"], kcal: "310 kcal" },
+            { title: "Comida", items: ["120 g Sepia o pulpo a la plancha", "100 g Patata cocida", "150 g Menestra de verduras"], kcal: "470 kcal" },
+            { title: "Snack", items: ["1 Yogur de proteína", "100 g Fresas"], kcal: "120 kcal" },
+            { title: "Cena", items: ["120 g Pechuga de pollo a la plancha", "150 g Setas salteadas con ajo", "1 Naranja"], kcal: "480 kcal" }
+          ]
+        },
+        SABADO: {
+          kcal: 1200, prot: 110, carbs: 90, fat: 35,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan integral Thin", "10 g Aceite de oliva virgen extra", "80 g Pechuga de pavo"], kcal: "280 kcal" },
+            { title: "Comida Libre Controlada", note: "Prioriza proteína limpia y mantén el control en porciones.", items: ["150 g Pechuga de pollo o carne magra con ensalada variada"], kcal: "500 kcal" },
+            { title: "Cena", items: ["120 g Lenguado o merluza al horno", "150 g Verduras al wok", "100 g Melon o piña"], kcal: "420 kcal" }
+          ]
+        },
+        DOMINGO: {
+          kcal: 1400, prot: 130, carbs: 115, fat: 42,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan de espelta integral", "10 g Aceite de oliva virgen extra", "80 g Lomo embuchado"], kcal: "320 kcal" },
+            { title: "Comida", items: ["120 g Conejo o pollo al horno", "100 g Patata asada", "150 g Ensalada verde con tomate"], kcal: "510 kcal" },
+            { title: "Snack", items: ["1 Yogur proteico", "1 Kiwi"], kcal: "110 kcal" },
+            { title: "Cena", items: ["120 g Revolvedor de claras con espárragos y gambas", "100 g Queso fresco Quark"], kcal: "460 kcal" }
+          ]
+        }
+      },
+
+      // --- FASE 4 (MANTENIMIENTO ESTRUCTURADO) ---
+      4: {
+        LUNES: {
+          kcal: 1750, prot: 120, carbs: 170, fat: 55,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno integral", "15 g Aceite de oliva virgen extra", "80 g Jamón serrano"], kcal: "380 kcal" },
+            { title: "Comida", note: "Normocalórica para máximo rendimiento en la barra.", items: ["120 g Ternera magra o pechuga de pollo", "120 g Arroz cocido", "150 g Pisto o verduras variadas", "100 g Piña"], kcal: "610 kcal" },
+            { title: "Snack", items: ["1 Yogur + proteico MERCADONA", "20 g Frutos secos variados"], kcal: "180 kcal" },
+            { title: "Cena", items: ["120 g Salmon a la plancha o bacalao", "120 g Patata cocida", "150 g Ensalada completa"], kcal: "580 kcal" }
+          ]
+        },
+        MARTES: {
+          kcal: 1780, prot: 122, carbs: 175, fat: 56,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral", "15 g Aceite de oliva virgen extra", "80 g Lomo embuchado"], kcal: "390 kcal" },
+            { title: "Comida", items: ["120 g Pechuga de pollo", "120 g Batata al horno", "150 g Brócoli o judías verdes"], kcal: "600 kcal" },
+            { title: "Snack", items: ["150 g Queso Quark", "100 g Arándanos"], kcal: "160 kcal" },
+            { title: "Cena", items: ["120 g Hamburguesa de pollo de campo", "1 Huevo fresco", "150 g Calabacín a la plancha", "1 Natilla proteica"], kcal: "630 kcal" }
+          ]
+        },
+        MIERCOLES: {
+          kcal: 1720, prot: 118, carbs: 165, fat: 54,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin", "15 g Aceite de oliva virgen extra", "100 g Lacón"], kcal: "370 kcal" },
+            { title: "Comida", items: ["120 g Cuscús o pasta integral", "120 g Tiras de pollo", "150 g Verduras variadas salteadas"], kcal: "620 kcal" },
+            { title: "Snack", items: ["1 Manzana", "20 g Almendras naturales"], kcal: "170 kcal" },
+            { title: "Cena", items: ["120 g Quinoa cocida", "120 g Champiñones y espárragos", "100 g Atún al natural"], kcal: "560 kcal" }
+          ]
+        },
+        JUEVES: {
+          kcal: 1760, prot: 121, carbs: 172, fat: 55,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno", "15 g Aceite de oliva virgen extra", "80 g Pollo asado La Carloteña"], kcal: "380 kcal" },
+            { title: "Comida", items: ["120 g Macarrones integrales", "120 g Carne picada de pollo", "100 g Tomate triturado natural"], kcal: "630 kcal" },
+            { title: "Snack", items: ["1 Yogur proteico", "1 Plátano pequeño"], kcal: "190 kcal" },
+            { title: "Cena", items: ["120 g Tortilla de 2 huevos", "100 g Gambas hervidas", "150 g Ensalada verde"], kcal: "560 kcal" }
+          ]
+        },
+        VIERNES: {
+          kcal: 1740, prot: 119, carbs: 168, fat: 54,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral", "15 g Aceite de oliva virgen extra", "80 g Atún al natural"], kcal: "370 kcal" },
+            { title: "Comida", items: ["120 g Garbanzos o lentejas cocidas", "120 g Bacalao o merluza", "1 Fruta (Naranja o Mandarina)"], kcal: "610 kcal" },
+            { title: "Snack", items: ["25 g Anacardos o nueces"], kcal: "160 kcal" },
+            { title: "Cena", items: ["120 g Pechuga de pollo a la plancha", "150 g Setas salteadas", "1 Queso fresco batido Quark con fruta"], kcal: "600 kcal" }
+          ]
+        },
+        SABADO: {
+          kcal: 1650, prot: 110, carbs: 150, fat: 50,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin", "15 g Aceite de oliva virgen extra", "80 g Pechuga de pavo"], kcal: "360 kcal" },
+            { title: "Comida Libre (Flexibilidad 80/20)", note: "Disfruta de una comida libre manteniendo buen aporte proteico.", items: ["Comida a elección sin exceder porciones excesivas"], kcal: "750 kcal" },
+            { title: "Cena", items: ["120 g Pez espada o lubina a la plancha", "120 g Batata al horno", "1 Fruta fresca"], kcal: "540 kcal" }
+          ]
+        },
+        DOMINGO: {
+          kcal: 1770, prot: 122, carbs: 174, fat: 56,
+          meals: [
+            { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de espelta integral", "15 g Aceite de oliva virgen extra", "80 g Lomo embuchado"], kcal: "380 kcal" },
+            { title: "Comida", items: ["120 g Pulpo cocido", "120 g Patata cocida con pimentón y AOVE"], kcal: "590 kcal" },
+            { title: "Snack", items: ["1 Ciruela o fruta de temporada", "15 g Frutos secos"], kcal: "140 kcal" },
+            { title: "Cena", items: ["120 g Melva o atún en ensalada completa con huevo duro y maíz"], kcal: "660 kcal" }
+          ]
+        }
+      }
+    };
 
     const allMesocyclesData = {
       1: {
@@ -520,16 +954,15 @@
     let currentWeek = parseInt(localStorage.getItem('m3_active_week')) || 1;
     let currentGoal = localStorage.getItem('m3_user_goal') || 'definicion';
     let currentDay = "LUNES";
+    let currentNutriDay = "LUNES";
     let bodyWeight = parseFloat(localStorage.getItem('m3_user_weight')) || 0;
 
-    // Obtener día de la semana actual
     function getCurrentDayName() {
       const daysMap = ['MIERCOLES', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'MIERCOLES'];
       const todayIdx = new Date().getDay();
       return daysMap[todayIdx];
     }
 
-    // Inicializar Controles y Perfil
     loadProfileData();
     updateWelcomeBanner();
 
@@ -539,7 +972,6 @@
 
     updateLabels();
 
-    // Sincronizar automáticamente con el día de hoy
     const autoToday = getCurrentDayName();
     switchDay(autoToday);
 
@@ -600,6 +1032,7 @@
       localStorage.setItem('m3_active_meso', currentMeso);
       updateLabels();
       renderExercises();
+      if (currentDay === 'NUTRICION') renderNutrition();
       loadHistory();
     }
 
@@ -635,16 +1068,21 @@
 
       const workoutView = document.getElementById('workout-view');
       const restView = document.getElementById('rest-view');
+      const nutritionView = document.getElementById('nutrition-view');
       const profileView = document.getElementById('profile-view');
       const videosView = document.getElementById('videos-view');
 
       workoutView.style.display = 'none';
       restView.style.display = 'none';
+      nutritionView.style.display = 'none';
       profileView.style.display = 'none';
       videosView.style.display = 'none';
 
       if (day === 'MIERCOLES') {
         restView.style.display = 'block';
+      } else if (day === 'NUTRICION') {
+        nutritionView.style.display = 'block';
+        renderNutrition();
       } else if (day === 'PERFIL') {
         profileView.style.display = 'block';
       } else if (day === 'VIDEOS') {
@@ -655,6 +1093,50 @@
         renderExercises();
         loadHistory();
       }
+    }
+
+    function switchNutriDay(dayKey) {
+      currentNutriDay = dayKey;
+      document.querySelectorAll('.nutri-day-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`nday-${dayKey}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderNutrition();
+    }
+
+    // RENDER PESTAÑA NUTRICIÓN CON FASES Y DÍAS
+    function renderNutrition() {
+      const activePhase = nutritionPhasesData[currentMeso] || nutritionPhasesData[3];
+      const dayData = activePhase[currentNutriDay] || activePhase.LUNES;
+
+      document.getElementById('nutri-header-cal').innerText = dayData.kcal;
+      document.getElementById('nutri-header-prot').innerText = `${dayData.prot} g`;
+      document.getElementById('nutri-header-carb').innerText = `${dayData.carbs} g`;
+      document.getElementById('nutri-header-fat').innerText = `${dayData.fat} g`;
+
+      const mealsContainer = document.getElementById('nutri-meals-container');
+      mealsContainer.innerHTML = '';
+
+      dayData.meals.forEach(meal => {
+        const mealBlock = document.createElement('div');
+        mealBlock.className = 'meal-block';
+
+        let itemsHtml = meal.items.map(item => `<li>${item}</li>`).join('');
+        let noteHtml = meal.note ? `<div class="meal-note">${meal.note}</div>` : '';
+        let kcalHtml = meal.kcal ? `<div class="meal-footer-cal">${meal.kcal}</div>` : '';
+
+        mealBlock.innerHTML = `
+          <div class="meal-title">${meal.title}</div>
+          <div class="meal-card">
+            ${noteHtml}
+            <ul class="meal-item-list">
+              ${itemsHtml}
+            </ul>
+            ${kcalHtml}
+          </div>
+        `;
+
+        mealsContainer.appendChild(mealBlock);
+      });
     }
 
     function renderExercises() {
