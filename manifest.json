@@ -1,23 +1,20 @@
 {
-  "name": "ApexFix Pro - Control de Entrenamiento",
-  "short_name": "ApexFix Pro",
-  "description": "Aplicación avanzada de control de entrenamiento, cargas y técnica por fases.",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#121824",
-  "theme_color": "#ff4b4b",
+  "short_name": "RS FIT PRO",
+  "name": "RS FIT PRO - Entrenamiento",
   "icons": [
     {
-      "src": "icon-192x192.png",
-      "sizes": "192x192",
+      "src": "./icon-192x192.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "192x192"
     },
     {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
+      "src": "./icon-512x512.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": "./index.html",
+  "background_color": "#121824",
+  "theme_color": "#121824",
+  "display": "standalone"
 }
