@@ -28,7 +28,7 @@
       --week-active: #f59e0b;
       --nutrition-accent: #10b981;
       
-      /* Colores Estilo UI Captura Nutrición */
+      /* Colores Estilo UI Nutrición */
       --nutri-card-bg: #ffffff;
       --nutri-card-text: #1f2937;
       --nutri-subtext: #4b5563;
@@ -248,7 +248,7 @@
     .history-item { font-size: 0.78rem; border-bottom: 1px solid var(--border-color); padding: 5px 0; color: var(--text-muted); }
 
     /* =========================================
-       🎨 DISEÑO PESTAÑA NUTRICIÓN (ESTILO CAPTURA)
+       🎨 DISEÑO PESTAÑA NUTRICIÓN Y LISTA COMPRA
        ========================================= */
     .nutri-day-selector {
       display: flex;
@@ -276,7 +276,12 @@
       border-color: var(--nutrition-accent);
     }
 
-    /* Tarjeta Macro Superior */
+    .nutri-day-btn.btn-shopping-mode {
+      background: #8b5cf6;
+      color: white;
+      border-color: #8b5cf6;
+    }
+
     .macro-header-card {
       background: var(--nutri-card-bg);
       border-radius: 12px;
@@ -317,33 +322,15 @@
 
     .stat-box { text-align: center; }
 
-    .stat-box .val {
-      font-size: 1.05rem;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .stat-box .lbl {
-      font-size: 0.72rem;
-      color: #6b7280;
-      margin-top: 3px;
-    }
+    .stat-box .val { font-size: 1.05rem; font-weight: 800; line-height: 1.1; }
+    .stat-box .lbl { font-size: 0.72rem; color: #6b7280; margin-top: 3px; }
 
     .val-prot { color: var(--prot-color); }
     .val-carb { color: var(--carb-color); }
     .val-fat { color: var(--fat-color); }
 
-    /* Tarjeta de Meal Individual */
-    .meal-block {
-      margin-bottom: 20px;
-    }
-
-    .meal-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--text-main);
-      margin-bottom: 10px;
-    }
+    .meal-block { margin-bottom: 20px; }
+    .meal-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
 
     .meal-card {
       background: var(--nutri-card-bg);
@@ -352,30 +339,94 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
-    .meal-item-list {
-      list-style: none;
+    .meal-item-list { list-style: none; margin-bottom: 15px; }
+    .meal-item-list li { font-size: 0.88rem; color: var(--nutri-card-text); padding: 5px 0; line-height: 1.4; }
+    .meal-note { font-size: 0.8rem; color: #4b5563; font-style: italic; margin-bottom: 8px; }
+    .meal-footer-cal { font-size: 0.88rem; color: #4b5563; font-weight: 600; margin-top: 10px; }
+
+    /* Estilos Vista Lista de la Compra */
+    .shopping-card {
+      background: var(--nutri-card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      color: var(--nutri-card-text);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .shopping-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
       margin-bottom: 15px;
     }
 
-    .meal-item-list li {
-      font-size: 0.88rem;
-      color: var(--nutri-card-text);
-      padding: 5px 0;
-      line-height: 1.4;
-    }
+    .shopping-header h2 { font-size: 1.1rem; color: #111827; }
 
-    .meal-note {
+    .btn-print {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: bold;
       font-size: 0.8rem;
-      color: #4b5563;
-      font-style: italic;
-      margin-bottom: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .meal-footer-cal {
+    .shopping-category {
+      margin-bottom: 16px;
+    }
+
+    .shopping-category h3 {
+      font-size: 0.92rem;
+      color: #3b82f6;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .shopping-list {
+      list-style: none;
+      padding-left: 5px;
+    }
+
+    .shopping-list li {
       font-size: 0.88rem;
-      color: #4b5563;
-      font-weight: 600;
-      margin-top: 10px;
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #374151;
+    }
+
+    .shopping-list input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+
+    /* Regla para Impresión / Descarga en PDF */
+    @media print {
+      body * { visibility: hidden; }
+      #printable-shopping-list, #printable-shopping-list * { visibility: visible; }
+      #printable-shopping-list {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        padding: 20px;
+      }
+      .btn-print, .nutri-day-selector, header, .day-selector, .welcome-banner { display: none !important; }
     }
   </style>
 </head>
@@ -463,42 +514,59 @@
       </div>
     </div>
 
-    <!-- VISTA DE NUTRICIÓN -->
+    <!-- VISTA DE NUTRICIÓN Y LISTA DE LA COMPRA -->
     <div id="nutrition-view" style="display: none;">
       <div class="nutri-day-selector">
-        <button class="nutri-day-btn active" id="nday-LUNES" onclick="switchNutriDay('LUNES')">Lunes</button>
+        <button class="nutri-day-btn" id="nday-LUNES" onclick="switchNutriDay('LUNES')">Lunes</button>
         <button class="nutri-day-btn" id="nday-MARTES" onclick="switchNutriDay('MARTES')">Martes</button>
         <button class="nutri-day-btn" id="nday-MIERCOLES" onclick="switchNutriDay('MIERCOLES')">Miércoles</button>
         <button class="nutri-day-btn" id="nday-JUEVES" onclick="switchNutriDay('JUEVES')">Jueves</button>
         <button class="nutri-day-btn" id="nday-VIERNES" onclick="switchNutriDay('VIERNES')">Viernes</button>
         <button class="nutri-day-btn" id="nday-SABADO" onclick="switchNutriDay('SABADO')">Sábado</button>
         <button class="nutri-day-btn" id="nday-DOMINGO" onclick="switchNutriDay('DOMINGO')">Domingo</button>
+        <button class="nutri-day-btn btn-shopping-mode" id="nday-COMPRA" onclick="switchNutriDay('COMPRA')">LISTA COMPRA 🛒</button>
       </div>
 
-      <!-- Tarjeta Macros Header -->
-      <div class="macro-header-card">
-        <div class="macro-main-cal">
-          <div class="cal-num" id="nutri-header-cal">1227</div>
-          <div class="cal-unit">kcal</div>
+      <!-- VISTA DIARIA DE MENÚ -->
+      <div id="daily-menu-container">
+        <div class="macro-header-card">
+          <div class="macro-main-cal">
+            <div class="cal-num" id="nutri-header-cal">1227</div>
+            <div class="cal-unit">kcal</div>
+          </div>
+          <div class="macro-stats-group">
+            <div class="stat-box">
+              <div class="val val-prot" id="nutri-header-prot">79 g</div>
+              <div class="lbl">Proteínas</div>
+            </div>
+            <div class="stat-box">
+              <div class="val val-carb" id="nutri-header-carb">162 g</div>
+              <div class="lbl">Carbs</div>
+            </div>
+            <div class="stat-box">
+              <div class="val val-fat" id="nutri-header-fat">30 g</div>
+              <div class="lbl">Grasas</div>
+            </div>
+          </div>
         </div>
-        <div class="macro-stats-group">
-          <div class="stat-box">
-            <div class="val val-prot" id="nutri-header-prot">79 g</div>
-            <div class="lbl">Proteínas</div>
-          </div>
-          <div class="stat-box">
-            <div class="val val-carb" id="nutri-header-carb">162 g</div>
-            <div class="lbl">Carbs</div>
-          </div>
-          <div class="stat-box">
-            <div class="val val-fat" id="nutri-header-fat">30 g</div>
-            <div class="lbl">Grasas</div>
-          </div>
-        </div>
+
+        <div id="nutri-meals-container"></div>
       </div>
 
-      <!-- Desglose de Comidas -->
-      <div id="nutri-meals-container"></div>
+      <!-- VISTA LISTA DE LA COMPRA IMPRIMIBLE -->
+      <div id="shopping-list-container" style="display: none;">
+        <div class="shopping-card" id="printable-shopping-list">
+          <div class="shopping-header">
+            <div>
+              <h2>🛒 Lista de la Compra Semanal</h2>
+              <span style="font-size: 0.8rem; color: #6b7280;" id="shopping-phase-label">Fase 1 (Base)</span>
+            </div>
+            <button type="button" class="btn-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
+          </div>
+
+          <div id="shopping-categories-list"></div>
+        </div>
+      </div>
     </div>
 
     <!-- VISTA DE PERFIL DE USUARIO -->
@@ -547,10 +615,9 @@
     const goalMultipliers = { definicion: 0.98, mantenimiento: 1.0, fuerza: 1.04 };
 
     // =========================================
-    // 🥗 BASE DE DATOS NUTRICIONAL COMPLETA (FASES 1, 2, 3 Y 4)
+    // 🥗 BASE DE DATOS NUTRICIONAL COMPLETA
     // =========================================
     const nutritionPhasesData = {
-      // --- FASE 1 ---
       1: {
         LUNES: {
           kcal: 1227, prot: 79, carbs: 162, fat: 30,
@@ -615,8 +682,6 @@
           ]
         }
       },
-
-      // --- FASE 2 ---
       2: {
         LUNES: {
           kcal: 2343, prot: 140, carbs: 54, fat: 174,
@@ -681,8 +746,6 @@
           ]
         }
       },
-
-      // --- FASE 3 (DEFINICIÓN Y PÉRDIDA DE GRASA) ---
       3: {
         LUNES: {
           kcal: 1390, prot: 128, carbs: 110, fat: 42,
@@ -747,8 +810,6 @@
           ]
         }
       },
-
-      // --- FASE 4 (MANTENIMIENTO ESTRUCTURADO) ---
       4: {
         LUNES: {
           kcal: 1750, prot: 120, carbs: 170, fat: 55,
@@ -799,7 +860,7 @@
           kcal: 1650, prot: 110, carbs: 150, fat: 50,
           meals: [
             { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin", "15 g Aceite de oliva virgen extra", "80 g Pechuga de pavo"], kcal: "360 kcal" },
-            { title: "Comida Libre (Flexibilidad 80/20)", note: "Disfruta de una comida libre manteniendo buen aporte proteico.", items: ["Comida a elección sin exceder porciones excesivas"], kcal: "750 kcal" },
+            { title: "Comida Libre (Flexibilidad 80/20)", note: "Disfruta de una comida libre manteniendo buen aporte proteico.", items: ["Comida a elección sin exceder porciones excessive"], kcal: "750 kcal" },
             { title: "Cena", items: ["120 g Pez espada o lubina a la plancha", "120 g Batata al horno", "1 Fruta fresca"], kcal: "540 kcal" }
           ]
         },
@@ -812,6 +873,211 @@
             { title: "Cena", items: ["120 g Melva o atún en ensalada completa con huevo duro y maíz"], kcal: "660 kcal" }
           ]
         }
+      }
+    };
+
+    // =========================================
+    // 🛒 BASE DE DATOS DE LA LISTA DE LA COMPRA
+    // =========================================
+    const shoppingListPhases = {
+      1: {
+        name: "Fase 1 (Base e Iniciación)",
+        categories: [
+          {
+            name: "🥩 Carnicería y Pescadería",
+            items: [
+              "Ternera (filete o hamburguesa) - 200g",
+              "Pechuga de pollo fresca / tiras al natural - 400g",
+              "Pollo asado en lonchas La Carloteña - 200g",
+              "Carne picada de pollo para burger - 200g",
+              "Fiambre de pavo / Pechuga asada El Pozo - 300g",
+              "Merluza fresca / congelada - 200g",
+              "Pulpo cocido - 200g",
+              "Lomo embuchado MERCADONA - 200g",
+              "Jamón serrano - 250g",
+              "Lacón en lonchas - 200g"
+            ]
+          },
+          {
+            name: "🥦 Frutería y Verduras",
+            items: [
+              "Patatas (o bote de patata cocida MERCADONA) - 1 kg",
+              "Batata / Boniato - 300g",
+              "Cebollas, Ajos y Pimientos (rojo/verde) - 1 malla cada uno",
+              "Pimiento rojo asado en tarro - 2 botes",
+              "Zanahorias y Calabacín - 500g cada uno",
+              "Espinacas frescas y Canónigos - 2 bolsas",
+              "Guisantes en conserva / congelados - 300g",
+              "Fruta variada: Piña, Mandarinas, Manzanas, Melocotón, Peras, Fresas, Naranjas, Ciruelas, Arándanos"
+            ]
+          },
+          {
+            name: "🧀 Refrigerados, Huevos y Lácteos",
+            items: [
+              "Huevos frescos de gallina - 2 docenas",
+              "Yogures de proteína (sabores variados) - 6 uds",
+              "Yogur griego natural - 2 uds",
+              "Queso fresco batido Quark - 2 tarrinas",
+              "Gelatinas + proteína MERCADONA - 4 uds",
+              "Queso feta para ensaladas - 1 paquete"
+            ]
+          },
+          {
+            name: "🌾 Despensa, Arroz y Conservas",
+            items: [
+              "Pan de centeno / Pan espelta integral / Pan Thin MERCADONA - 3 paquetes",
+              "Arroz sabroz / integral - 1 kg",
+              "Cuscús y Macarrones integrales - 1 paquete cada uno",
+              "Garbanzos cocidos en bote - 2 tarros",
+              "Atún al natural (latas de 60g) - 2 packs (12 latas)",
+              "Melva / Caballa en conserva - 2 latas",
+              "Leche de coco en lata - 1 lata",
+              "Tomate triturado natural - 1 bote",
+              "Aceite de oliva virgen extra (AOVE) - 1 botella",
+              "Frutos secos: Nueces, Anacardos, Almendras - 1 bolsa variada"
+            ]
+          }
+        ]
+      },
+      2: {
+        name: "Fase 2 (Volumen y Hipertrofia)",
+        categories: [
+          {
+            name: "🥩 Carnicería y Pescadería",
+            items: [
+              "Ternera magra - 200g",
+              "Pechuga de pavo / Pollo fresco - 500g",
+              "Hamburguesa pollo de campo gruesa MERCADONA - 200g",
+              "Pollo asado al horno entero - 1 ud",
+              "Bacalao / Pez espada fresco - 400g",
+              "Gambas hervidas / peladas - 300g",
+              "Jamón serrano / Lomo embuchado - 300g"
+            ]
+          },
+          {
+            name: "🥦 Frutería y Verduras",
+            items: [
+              "Patatas y Batatas - 1 kg",
+              "Pisto de verduras (brick o ingredientes caseros) - 2 bricks",
+              "Champiñones y Setas frescas - 400g",
+              "Espárragos trigueros - 2 manojos",
+              "Calabacín, Tomate, Pimiento rojo, Cebolla - 1 kg variado",
+              "Fruta: Mandarinas, Melocotón, Arándanos, Manzanas, Naranjas"
+            ]
+          },
+          {
+            name: "🧀 Refrigerados, Huevos y Lácteos",
+            items: [
+              "Huevos frescos - 2 docenas",
+              "Natilla de vainilla '+proteína' MERCADONA (envase rojo) - 4 uds",
+              "Yogur + proteínas natural MERCADONA - 4 uds",
+              "Queso fresco batido Quark con arándanos - 2 tarrinas",
+              "Gelatina + proteína MERCADONA - 2 uds"
+            ]
+          },
+          {
+            name: "🌾 Despensa, Arroz y Conservas",
+            items: [
+              "Pan de centeno / Espelta integral LIDL y MERCADONA - 3 paquetes",
+              "Quinoa y Arroz - 1 kg cada uno",
+              "Garbanzos cocidos Carrefour - 2 tarros",
+              "Atún al natural - 3 packs (18 latas)",
+              "Gazpacho fresco - 1 litro",
+              "Pistachos y Anacardos crudos - 2 bolsas",
+              "Salsa de soja - 1 botella"
+            ]
+          }
+        ]
+      },
+      3: {
+        name: "Fase 3 (Definición y Pérdida de Grasa)",
+        categories: [
+          {
+            name: "🥩 Carnicería y Pescadería",
+            items: [
+              "Pechuga de pollo y pavo magra - 800g",
+              "Filete de ternera magra - 200g",
+              "Hamburguesa de pavo/pollo limpia - 200g",
+              "Merluza / Bacalao fresco - 400g",
+              "Atún al natural en lata - 2 packs (12 latas)",
+              "Sepia / Pulpo cocido - 300g",
+              "Gambas peladas - 200g",
+              "Lomo embuchado y Lacón - 300g"
+            ]
+          },
+          {
+            name: "🥦 Frutería y Verduras",
+            items: [
+              "Brócoli, Canónigos y Espinacas - 3 bolsas",
+              "Espárragos trigueros y Setas - 300g",
+              "Calabacín, Pimiento, Tomates de ensalada - 1 kg variado",
+              "Patatas pequeñas y Batata - 500g",
+              "Fruta baja en calorías: Piña natural, Fresas, Arándanos, Manzanas verdes, Kiwis, Naranjas"
+            ]
+          },
+          {
+            name: "🧀 Refrigerados, Huevos y Lácteos",
+            items: [
+              "Claras de huevo líquidas + Huevos enteros - 1 bote de claras y 1 docena de huevos",
+              "Queso fresco batido 0% MERCADONA - 3 tarrinas",
+              "Yogures proteicos sabor vainilla/fresa - 6 uds",
+              "Gelatinas + proteína - 4 uds"
+            ]
+          },
+          {
+            name: "🌾 Despensa y Varios",
+            items: [
+              "Pan de centeno integral / Pan Thin - 2 paquetes",
+              "Arroz integral y Quinoa - 1 paquete cada uno",
+              "Macarrones integrales - 1 paquete",
+              "Garbanzos cocidos en tarro - 1 tarro",
+              "Nueces y Almendras naturales - 1 bolsa"
+            ]
+          }
+        ]
+      },
+      4: {
+        name: "Fase 4 (Mantenimiento Estructurado)",
+        categories: [
+          {
+            name: "🥩 Carnicería y Pescadería",
+            items: [
+              "Ternera magra y Pechuga de pollo - 800g",
+              "Hamburguesas de pollo de campo - 300g",
+              "Salmón fresco / Bacalao / Lubina / Pez espada - 600g",
+              "Pulpo cocido - 300g",
+              "Jamón serrano y Lomo embuchado - 300g"
+            ]
+          },
+          {
+            name: "🥦 Frutería y Verduras",
+            items: [
+              "Patatas y Batatas - 1.5 kg",
+              "Pisto de verduras y Brócoli - 500g",
+              "Ensaladas variadas, Champiñones, Espárragos - 1 kg",
+              "Fruta variada de temporada: Piña, Arándanos, Plátanos, Naranjas, Ciruelas"
+            ]
+          },
+          {
+            name: "🧀 Refrigerados, Huevos y Lácteos",
+            items: [
+              "Huevos frescos - 2 docenas",
+              "Yogures + proteicos MERCADONA - 6 uds",
+              "Natillas proteicas - 2 uds",
+              "Queso Quark - 2 tarrinas"
+            ]
+          },
+          {
+            name: "🌾 Despensa y Varios",
+            items: [
+              "Pan de centeno integral y Espelta - 3 paquetes",
+              "Arroz, Cuscús, Pasta integral, Quinoa - 1 paquete de cada uno",
+              "Garbanzos y Lentejas cocidas en tarro - 2 tarros",
+              "Atún y Melva en conserva - 2 packs",
+              "Frutos secos variados (Almendras, Anacardos, Nueces) - 1 bolsa"
+            ]
+          }
+        ]
       }
     };
 
@@ -954,14 +1220,15 @@
     let currentWeek = parseInt(localStorage.getItem('m3_active_week')) || 1;
     let currentGoal = localStorage.getItem('m3_user_goal') || 'definicion';
     let currentDay = "LUNES";
-    let currentNutriDay = "LUNES";
-    let bodyWeight = parseFloat(localStorage.getItem('m3_user_weight')) || 0;
-
+    
     function getCurrentDayName() {
-      const daysMap = ['MIERCOLES', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'MIERCOLES'];
+      const daysMap = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
       const todayIdx = new Date().getDay();
       return daysMap[todayIdx];
     }
+
+    let currentNutriDay = getCurrentDayName();
+    let bodyWeight = parseFloat(localStorage.getItem('m3_user_weight')) || 0;
 
     loadProfileData();
     updateWelcomeBanner();
@@ -973,7 +1240,7 @@
     updateLabels();
 
     const autoToday = getCurrentDayName();
-    switchDay(autoToday);
+    switchDay(autoToday === 'DOMINGO' || autoToday === 'SABADO' ? 'LUNES' : autoToday);
 
     function updateWelcomeBanner() {
       const name = localStorage.getItem('m3_prof_name') || '';
@@ -1059,9 +1326,7 @@
 
     function switchDay(day) {
       currentDay = day;
-      document.querySelectorAll('.day-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
+      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
 
       const activeBtn = document.getElementById(`btn-${day}`);
       if (activeBtn) activeBtn.classList.add('active');
@@ -1082,6 +1347,7 @@
         restView.style.display = 'block';
       } else if (day === 'NUTRICION') {
         nutritionView.style.display = 'block';
+        currentNutriDay = getCurrentDayName();
         renderNutrition();
       } else if (day === 'PERFIL') {
         profileView.style.display = 'block';
@@ -1097,45 +1363,88 @@
 
     function switchNutriDay(dayKey) {
       currentNutriDay = dayKey;
-      document.querySelectorAll('.nutri-day-btn').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`nday-${dayKey}`);
-      if (activeBtn) activeBtn.classList.add('active');
       renderNutrition();
     }
 
-    // RENDER PESTAÑA NUTRICIÓN CON FASES Y DÍAS
+    // RENDER PESTAÑA NUTRICIÓN Y LISTA COMPRA
     function renderNutrition() {
-      const activePhase = nutritionPhasesData[currentMeso] || nutritionPhasesData[3];
-      const dayData = activePhase[currentNutriDay] || activePhase.LUNES;
+      document.querySelectorAll('.nutri-day-btn').forEach(btn => btn.classList.remove('active'));
+      const activeNutriBtn = document.getElementById(`nday-${currentNutriDay}`);
+      if (activeNutriBtn) activeNutriBtn.classList.add('active');
 
-      document.getElementById('nutri-header-cal').innerText = dayData.kcal;
-      document.getElementById('nutri-header-prot').innerText = `${dayData.prot} g`;
-      document.getElementById('nutri-header-carb').innerText = `${dayData.carbs} g`;
-      document.getElementById('nutri-header-fat').innerText = `${dayData.fat} g`;
+      const dailyMenuContainer = document.getElementById('daily-menu-container');
+      const shoppingListContainer = document.getElementById('shopping-list-container');
 
-      const mealsContainer = document.getElementById('nutri-meals-container');
-      mealsContainer.innerHTML = '';
+      if (currentNutriDay === 'COMPRA') {
+        dailyMenuContainer.style.display = 'none';
+        shoppingListContainer.style.display = 'block';
+        renderShoppingList();
+      } else {
+        dailyMenuContainer.style.display = 'block';
+        shoppingListContainer.style.display = 'none';
 
-      dayData.meals.forEach(meal => {
-        const mealBlock = document.createElement('div');
-        mealBlock.className = 'meal-block';
+        const activePhase = nutritionPhasesData[currentMeso] || nutritionPhasesData[3];
+        const dayData = activePhase[currentNutriDay] || activePhase.LUNES;
 
-        let itemsHtml = meal.items.map(item => `<li>${item}</li>`).join('');
-        let noteHtml = meal.note ? `<div class="meal-note">${meal.note}</div>` : '';
-        let kcalHtml = meal.kcal ? `<div class="meal-footer-cal">${meal.kcal}</div>` : '';
+        document.getElementById('nutri-header-cal').innerText = dayData.kcal;
+        document.getElementById('nutri-header-prot').innerText = `${dayData.prot} g`;
+        document.getElementById('nutri-header-carb').innerText = `${dayData.carbs} g`;
+        document.getElementById('nutri-header-fat').innerText = `${dayData.fat} g`;
 
-        mealBlock.innerHTML = `
-          <div class="meal-title">${meal.title}</div>
-          <div class="meal-card">
-            ${noteHtml}
-            <ul class="meal-item-list">
-              ${itemsHtml}
-            </ul>
-            ${kcalHtml}
-          </div>
+        const mealsContainer = document.getElementById('nutri-meals-container');
+        mealsContainer.innerHTML = '';
+
+        dayData.meals.forEach(meal => {
+          const mealBlock = document.createElement('div');
+          mealBlock.className = 'meal-block';
+
+          let itemsHtml = meal.items.map(item => `<li>${item}</li>`).join('');
+          let noteHtml = meal.note ? `<div class="meal-note">${meal.note}</div>` : '';
+          let kcalHtml = meal.kcal ? `<div class="meal-footer-cal">${meal.kcal}</div>` : '';
+
+          mealBlock.innerHTML = `
+            <div class="meal-title">${meal.title}</div>
+            <div class="meal-card">
+              ${noteHtml}
+              <ul class="meal-item-list">
+                ${itemsHtml}
+              </ul>
+              ${kcalHtml}
+            </div>
+          `;
+
+          mealsContainer.appendChild(mealBlock);
+        });
+      }
+    }
+
+    // RENDER LISTA DE LA COMPRA IMPRIMIBLE Y CON CHECKBOX
+    function renderShoppingList() {
+      const phaseData = shoppingListPhases[currentMeso] || shoppingListPhases[3];
+      document.getElementById('shopping-phase-label').innerText = phaseData.name;
+
+      const listContainer = document.getElementById('shopping-categories-list');
+      listContainer.innerHTML = '';
+
+      phaseData.categories.forEach(cat => {
+        const catBlock = document.createElement('div');
+        catBlock.className = 'shopping-category';
+
+        let itemsHtml = cat.items.map((item, idx) => `
+          <li>
+            <input type="checkbox" id="chk_${currentMeso}_${cat.name.substring(0,3)}_${idx}">
+            <label for="chk_${currentMeso}_${cat.name.substring(0,3)}_${idx}">${item}</label>
+          </li>
+        `).join('');
+
+        catBlock.innerHTML = `
+          <h3>${cat.name}</h3>
+          <ul class="shopping-list">
+            ${itemsHtml}
+          </ul>
         `;
 
-        mealsContainer.appendChild(mealBlock);
+        listContainer.appendChild(catBlock);
       });
     }
 
