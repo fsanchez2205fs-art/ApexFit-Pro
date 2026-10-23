@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ApexFix Pro - Control de Entrenamiento</title>
+  <title>RS FIT PRO - Control de Entrenamiento</title>
 
   <!-- 📱 ENLACES PARA EL LOGO Y LA INSTALACIÓN EN EL MÓVIL (PWA) -->
   <link rel="manifest" href="./manifest.json">
@@ -69,7 +69,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    .header-brand h1 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
+    .header-brand h1 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); font-weight: 800; }
 
     .welcome-banner {
       background: linear-gradient(135deg, rgba(255, 75, 75, 0.15), rgba(56, 189, 248, 0.15));
@@ -457,8 +457,8 @@
 
   <header>
     <div class="header-brand">
-      <img src="./icon-192x192.png" alt="ApexFix Logo">
-      <h1>ApexFix Pro - Entrenamiento</h1>
+      <img src="./icon-192x192.png" alt="RS FIT PRO Logo">
+      <h1>RS FIT PRO</h1>
     </div>
 
     <div class="top-controls">
@@ -786,7 +786,7 @@
             { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan integral Thin MERCADONA", "10 g Aceite de oliva virgen extra", "100 g Lacón"], kcal: "619 kcal" },
             { title: "Comida", items: ["100 g Cuscús", "100 g Calabacín", "100 g Pimiento rojo", "100 g Pimiento verde", "100 g Zanahoria cruda", "100 g Tiras de pollo al natural MERCADONA"], kcal: "596 kcal" },
             { title: "Snack", items: ["100 g Manzana"], kcal: "50 kcal" },
-            { title: "Cena", note: "Sofrreír ajo con aceite, añadir espinacas y garbanzos.", items: ["100 g Espinaca hervida", "100 g Garbanzo cocido", "100 g Leche de coco", "100 g Ajo", "1 Gelatina + proteína MERCADONA"], kcal: "355 kcal" }
+            { title: "Cena", note: "Sofreír ajo con aceite, añadir espinacas y garbanzos.", items: ["100 g Espinaca hervida", "100 g Garbanzo cocido", "100 g Leche de coco", "100 g Ajo", "1 Gelatina + proteína MERCADONA"], kcal: "355 kcal" }
           ]
         },
         JUEVES: {
@@ -940,7 +940,7 @@
           meals: [
             { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan integral Thin", "10 g Aceite de oliva virgen extra", "80 g Pechuga de pavo"], kcal: "280 kcal" },
             { title: "Comida Libre Controlada", note: "Prioriza proteína limpia y mantén el control en porciones.", items: ["150 g Pechuga de pollo o carne magra con ensalada variada"], kcal: "500 kcal" },
-            { title: "Cena", items: ["120 g Lenguado o merluza al horno", "150 g Verduras al wok", "100 g Melon o piña"], kcal: "420 kcal" }
+            { title: "Cena", items: ["120 g Lenguado o merluza al horno", "150 g Verduras al wok", "100 g Melón o piña"], kcal: "420 kcal" }
           ]
         },
         DOMINGO: {
@@ -949,7 +949,7 @@
             { title: "Desayuno", items: ["100 g Café o infusión", "60 g Pan de espelta integral", "10 g Aceite de oliva virgen extra", "80 g Lomo embuchado"], kcal: "320 kcal" },
             { title: "Comida", items: ["120 g Conejo o pollo al horno", "100 g Patata asada", "150 g Ensalada verde con tomate"], kcal: "510 kcal" },
             { title: "Snack", items: ["1 Yogur proteico", "1 Kiwi"], kcal: "110 kcal" },
-            { title: "Cena", items: ["120 g Revolvedor de claras con espárragos y gambas", "100 g Queso fresco Quark"], kcal: "460 kcal" }
+            { title: "Cena", items: ["120 g Revuelto de claras con espárragos y gambas", "100 g Queso fresco Quark"], kcal: "460 kcal" }
           ]
         }
       },
@@ -960,7 +960,7 @@
             { title: "Desayuno", items: ["100 g Café o infusión", "70 g Pan de centeno integral", "15 g Aceite de oliva virgen extra", "80 g Jamón serrano"], kcal: "380 kcal" },
             { title: "Comida", note: "Normocalórica para máximo rendimiento en la barra.", items: ["120 g Ternera magra o pechuga de pollo", "120 g Arroz cocido", "150 g Pisto o verduras variadas", "100 g Piña"], kcal: "610 kcal" },
             { title: "Snack", items: ["1 Yogur + proteico MERCADONA", "20 g Frutos secos variados"], kcal: "180 kcal" },
-            { title: "Cena", items: ["120 g Salmon a la plancha o bacalao", "120 g Patata cocida", "150 g Ensalada completa"], kcal: "580 kcal" }
+            { title: "Cena", items: ["120 g Salmón a la plancha o bacalao", "120 g Patata cocida", "150 g Ensalada completa"], kcal: "580 kcal" }
           ]
         },
         MARTES: {
@@ -1530,9 +1530,6 @@
       renderNutrition();
     }
 
-    // =========================================
-    // 📏 GESTIÓN DE MÉTRICAS SEMANALES Y HISTORIAL
-    // =========================================
     function saveWeeklyMetrics() {
       const key = `m3_metrics_f${currentMeso}_w${currentWeek}`;
       const data = {
@@ -1611,15 +1608,11 @@
       container.innerHTML = found ? html : '<em>No hay registros de métricas guardados todavía.</em>';
     }
 
-    // =========================================
-    // 📈 GRÁFICAS DE PROGRESO INDIVIDUALES
-    // =========================================
     function renderProgressCharts() {
       const container = document.getElementById('progress-charts-list');
       
       let records = [];
       
-      // Añadir métricas base si existen
       const basePeso = localStorage.getItem('m3_user_weight');
       if (basePeso) {
         records.push({
@@ -1636,7 +1629,6 @@
         });
       }
 
-      // Buscar métricas guardadas por semanas
       let weekKeys = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
@@ -1733,7 +1725,6 @@
       });
     }
 
-    // RENDER PESTAÑA NUTRICIÓN Y LISTA COMPRA
     function renderNutrition() {
       document.querySelectorAll('.nutri-day-btn').forEach(btn => btn.classList.remove('active'));
       const activeNutriBtn = document.getElementById(`nday-${currentNutriDay}`);
@@ -1893,7 +1884,6 @@
     function saveExerciseVideo(input, keyBase) {
       const file = input.files[0];
       if (file) {
-        // Se crea un enlace directo temporal sin saturar localStorage
         const objectUrl = URL.createObjectURL(file);
         sessionVideoBlobs[keyBase] = objectUrl;
 
